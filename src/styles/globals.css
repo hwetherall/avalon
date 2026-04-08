@@ -1,0 +1,90 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-surface-900 text-gray-100 font-sans antialiased;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-surface-900;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-surface-600 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-500;
+  }
+}
+
+@layer components {
+  .step-node {
+    @apply relative border border-surface-600 rounded-lg p-4 bg-surface-800 transition-all duration-300;
+  }
+
+  .step-node.waiting {
+    @apply opacity-50;
+  }
+
+  .step-node.running {
+    @apply border-amber-500/50 shadow-lg shadow-amber-500/10;
+  }
+
+  .step-node.complete {
+    @apply border-emerald-500/30;
+  }
+
+  .step-node.error {
+    @apply border-red-500/50 shadow-lg shadow-red-500/10;
+  }
+
+  .passport-section h2 {
+    @apply text-xl font-semibold text-gray-100 mt-8 mb-3 pb-2 border-b border-surface-600;
+  }
+
+  .passport-section h3 {
+    @apply text-lg font-medium text-gray-200 mt-5 mb-2;
+  }
+
+  .passport-section p {
+    @apply text-gray-300 leading-relaxed mb-3;
+  }
+
+  .passport-section ul {
+    @apply list-disc list-inside text-gray-300 space-y-1 mb-3 ml-2;
+  }
+
+  .passport-section ol {
+    @apply list-decimal list-inside text-gray-300 space-y-1 mb-3 ml-2;
+  }
+
+  .passport-section strong {
+    @apply text-gray-100 font-semibold;
+  }
+
+  .passport-section blockquote {
+    @apply border-l-2 border-accent pl-4 italic text-gray-400 my-3;
+  }
+
+  .passport-section hr {
+    @apply border-surface-600 my-6;
+  }
+
+  .pulse-dot {
+    @apply inline-block w-2 h-2 rounded-full bg-amber-400;
+    animation: pulse-glow 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+}
