@@ -3,6 +3,8 @@ import InputPanel from './components/InputPanel.jsx'
 import PipelineView from './components/PipelineView.jsx'
 import PassportView from './components/PassportView.jsx'
 import { runPipeline, STEPS } from './pipeline/orchestrator.js'
+// Demo data is lazy-loaded only when the user clicks Demo
+const loadDemoData = () => import('./demo/demoData.js')
 
 const PHASES = { INPUT: 'input', RUNNING: 'running', COMPLETE: 'complete', ERROR: 'error' }
 
@@ -11,6 +13,7 @@ export default function App() {
   const [stepStates, setStepStates] = useState({})
   const [passport, setPassport] = useState(null)
   const [pipelineError, setPipelineError] = useState(null)
+  const [isDemo, setIsDemo] = useState(false)
   const startTimesRef = useRef({})
 
   const updateStep = useCallback((stepId, update) => {
@@ -30,9 +33,9 @@ export default function App() {
     setPhase(PHASES.RUNNING)
     setPipelineError(null)
     setPassport(null)
+    setIsDemo(false)
     startTimesRef.current = {}
 
-    // Initialize all steps as waiting
     const initial = {}
     for (const step of STEPS) {
       initial[step.id] = { status: 'waiting', output: null, error: null }
@@ -49,11 +52,35 @@ export default function App() {
     }
   }, [updateStep])
 
+  const handleDemo = useCallback(async () => {
+    const { DEMO_STEP_OUTPUTS, DEMO_PASSPORT } = await loadDemoData()
+
+    setIsDemo(true)
+    setPipelineError(null)
+
+    // Build step states with all steps instantly complete
+    const now = Date.now()
+    const demoStates = {}
+    for (const step of STEPS) {
+      demoStates[step.id] = {
+        status: 'complete',
+        output: DEMO_STEP_OUTPUTS[step.id] || null,
+        error: null,
+        startTime: now,
+        timestamp: now,
+      }
+    }
+    setStepStates(demoStates)
+    setPassport(DEMO_PASSPORT)
+    setPhase(PHASES.COMPLETE)
+  }, [])
+
   const handleReset = () => {
     setPhase(PHASES.INPUT)
     setStepStates({})
     setPassport(null)
     setPipelineError(null)
+    setIsDemo(false)
     startTimesRef.current = {}
   }
 
@@ -62,7 +89,7 @@ export default function App() {
       <div className="px-4 py-8 md:px-8 lg:px-12">
         {/* Input Phase */}
         {phase === PHASES.INPUT && (
-          <InputPanel onSubmit={handleSubmit} disabled={false} />
+          <InputPanel onSubmit={handleSubmit} onDemo={handleDemo} disabled={false} />
         )}
 
         {/* Running Phase */}
@@ -94,6 +121,15 @@ export default function App() {
         {/* Complete Phase */}
         {phase === PHASES.COMPLETE && passport && (
           <div className="space-y-8">
+            {isDemo && (
+              <div className="max-w-5xl mx-auto">
+                <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-center">
+                  <span className="text-xs font-medium text-amber-300">
+                    Demo Mode — Samsung LEO Satellite Case — Pre-computed outputs, no AI calls made
+                  </span>
+                </div>
+              </div>
+            )}
             <PipelineView stepStates={stepStates} />
             <div className="border-t border-surface-600 pt-8">
               <PassportView passport={passport} onReset={handleReset} />

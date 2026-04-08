@@ -42,7 +42,7 @@ const CONTEXT_FIELDS = [
 const MIN_LENGTH = 500
 const MAX_TOTAL = 500000
 
-export default function InputPanel({ onSubmit, disabled }) {
+export default function InputPanel({ onSubmit, onDemo, disabled }) {
   const [chapters, setChapters] = useState({ demval: '', marketResearch: '', competitorAnalysis: '' })
   const [contextFields, setContextFields] = useState({ question: '', success: '', audience: '', background: '', instructions: '' })
   const [contextExpanded, setContextExpanded] = useState(false)
@@ -119,6 +119,13 @@ export default function InputPanel({ onSubmit, disabled }) {
       <div className="mb-8 text-center">
         <h1 className="text-3xl font-bold text-gray-100 font-mono tracking-tight">AVALON</h1>
         <p className="text-gray-400 mt-2 text-sm">Adversarial Synthesis Engine — Opportunity Validation Bundle</p>
+        <button
+          onClick={onDemo}
+          disabled={disabled}
+          className="mt-3 px-4 py-1.5 text-xs font-medium rounded border border-amber-500/30 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 hover:text-amber-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Demo — Samsung LEO Satellite Case
+        </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
