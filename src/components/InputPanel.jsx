@@ -6,12 +6,46 @@ const CHAPTERS = [
   { key: 'competitorAnalysis', label: 'Competitor Analysis', placeholder: 'Paste Competitor Analysis chapter markdown here...' },
 ]
 
+const CONTEXT_FIELDS = [
+  {
+    key: 'question',
+    label: 'Question we are trying to solve',
+    placeholder: 'What is the core strategic question? Include key supporting questions and constraints...',
+    rows: 5,
+  },
+  {
+    key: 'success',
+    label: 'How do you measure success',
+    placeholder: 'Primary and secondary success criteria, trade-off guidance, target metrics...',
+    rows: 4,
+  },
+  {
+    key: 'audience',
+    label: 'Who will this analysis be presented to',
+    placeholder: 'e.g., C-Levels and Business Managers, Future Business Division at Samsung Electronics',
+    rows: 2,
+  },
+  {
+    key: 'background',
+    label: 'Anything else we should know before starting the analysis?',
+    placeholder: 'Additional background, internal capabilities, client-stated assumptions, key context...',
+    rows: 5,
+  },
+  {
+    key: 'instructions',
+    label: 'Project Instructions',
+    placeholder: 'Prioritized questions, blocking questions that must be answered, specific focus areas...',
+    rows: 5,
+  },
+]
+
 const MIN_LENGTH = 500
 const MAX_TOTAL = 500000
 
 export default function InputPanel({ onSubmit, disabled }) {
   const [chapters, setChapters] = useState({ demval: '', marketResearch: '', competitorAnalysis: '' })
-  const [userContext, setUserContext] = useState('')
+  const [contextFields, setContextFields] = useState({ question: '', success: '', audience: '', background: '', instructions: '' })
+  const [contextExpanded, setContextExpanded] = useState(false)
   const [errors, setErrors] = useState({})
   const fileRefs = useRef({})
 
@@ -34,6 +68,20 @@ export default function InputPanel({ onSubmit, disabled }) {
     updateChapter(key, text)
   }
 
+  const updateContextField = (key, value) => {
+    setContextFields(prev => ({ ...prev, [key]: value }))
+  }
+
+  const buildUserContext = () => {
+    const sections = []
+    if (contextFields.question.trim()) sections.push(`## Question we are trying to solve:\n\n${contextFields.question.trim()}`)
+    if (contextFields.success.trim()) sections.push(`## How do you measure success:\n\n${contextFields.success.trim()}`)
+    if (contextFields.audience.trim()) sections.push(`## Who will this analysis be presented to:\n\n${contextFields.audience.trim()}`)
+    if (contextFields.background.trim()) sections.push(`## Anything else we should know before starting the analysis?\n\n${contextFields.background.trim()}`)
+    if (contextFields.instructions.trim()) sections.push(`## Project Instructions:\n\n${contextFields.instructions.trim()}`)
+    return sections.length > 0 ? sections.join('\n\n') : null
+  }
+
   const validate = () => {
     const newErrors = {}
     for (const { key, label } of CHAPTERS) {
@@ -44,7 +92,8 @@ export default function InputPanel({ onSubmit, disabled }) {
       }
     }
 
-    const totalLen = Object.values(chapters).join('').length + userContext.length
+    const contextStr = buildUserContext() || ''
+    const totalLen = Object.values(chapters).join('').length + contextStr.length
     if (totalLen > MAX_TOTAL) {
       newErrors._global = `Combined input exceeds ${MAX_TOTAL.toLocaleString()} characters. Outputs may be truncated.`
     }
@@ -59,7 +108,7 @@ export default function InputPanel({ onSubmit, disabled }) {
       demval: chapters.demval,
       marketResearch: chapters.marketResearch,
       competitorAnalysis: chapters.competitorAnalysis,
-      userContext: userContext.trim() || null,
+      userContext: buildUserContext(),
     })
   }
 
@@ -113,16 +162,38 @@ export default function InputPanel({ onSubmit, disabled }) {
       </div>
 
       <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-300 mb-2">
-          Additional Context <span className="text-gray-500">(optional)</span>
-        </label>
-        <textarea
-          className="w-full h-24 bg-surface-800 border border-surface-600 rounded-lg p-3 text-sm text-gray-200 font-mono resize-y placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition-colors"
-          placeholder="Any additional context for the synthesis (e.g., specific focus areas, constraints, client preferences)..."
-          value={userContext}
-          onChange={e => setUserContext(e.target.value)}
-          disabled={disabled}
-        />
+        <button
+          type="button"
+          onClick={() => setContextExpanded(!contextExpanded)}
+          className="flex items-center gap-2 text-sm font-medium text-gray-300 hover:text-gray-100 transition-colors mb-3"
+        >
+          <span className={`text-xs transition-transform ${contextExpanded ? 'rotate-90' : ''}`}>&#9654;</span>
+          Additional Context
+          <span className="text-gray-500 font-normal">(optional)</span>
+          {Object.values(contextFields).some(v => v.trim()) && (
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-accent/20 text-accent-light font-mono">
+              {Object.values(contextFields).filter(v => v.trim()).length}/{CONTEXT_FIELDS.length} filled
+            </span>
+          )}
+        </button>
+
+        {contextExpanded && (
+          <div className="space-y-4 pl-4 border-l border-surface-600">
+            {CONTEXT_FIELDS.map(({ key, label, placeholder, rows }) => (
+              <div key={key}>
+                <label className="block text-sm font-medium text-gray-400 mb-1.5">{label}</label>
+                <textarea
+                  className="w-full bg-surface-800 border border-surface-600 rounded-lg p-3 text-sm text-gray-200 font-mono resize-y placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 transition-colors"
+                  rows={rows}
+                  placeholder={placeholder}
+                  value={contextFields[key]}
+                  onChange={e => updateContextField(key, e.target.value)}
+                  disabled={disabled}
+                />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {errors._global && (

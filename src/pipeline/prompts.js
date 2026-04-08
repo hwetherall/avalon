@@ -5,7 +5,7 @@ export function buildPrompt(agentId, inputs) {
 }
 
 const optionalContext = (ctx) =>
-  ctx ? `\n## Additional User Context\n\n${ctx}\n` : ''
+  ctx ? `\n## Strategic Context (from client intake)\n\n${ctx}\n` : ''
 
 const PROMPT_BUILDERS = {
   tension_dm: ({ chapterA, chapterB, userContext }) => ({
@@ -434,6 +434,10 @@ const TENSION_SYSTEM = `You are a cross-chapter tension analyst for an investmen
 
 You are NOT summarizing either chapter. You are finding the things that only become visible when you read BOTH chapters together.
 
+You may receive a "Strategic Context" section containing the client's core question, success criteria, audience, background, and project instructions. If provided, use it to prioritize which tensions matter most — tensions that bear on the client's blocking questions or success thresholds are more important than tangential conflicts.
+
+Note: Upstream chapters may contain HTML-formatted tables. Read them as structured data — do not comment on the formatting.
+
 Rules:
 - Be specific. Name the exact findings, data points, or verdicts that align or conflict.
 - Do not hedge. If there is a tension, state it directly.
@@ -447,6 +451,14 @@ Your job is NOT to be blindly optimistic. Your job is to find the strongest evid
 
 You must produce a COMPLETE strategic thesis, not just a verdict. The thesis must be internally coherent — the geography, customer, product, positioning, and constraints must all fit together as one strategy, not a checklist of independent answers.
 
+You may receive a "Strategic Context" section from the client intake. If it contains:
+- **Success criteria** (revenue targets, margin thresholds, IRR, payback period): Your thesis must explicitly address whether the evidence supports achieving these benchmarks. If your recommended path cannot plausibly meet them, say so.
+- **Blocking questions**: Your thesis must address each one. If the evidence cannot answer a blocking question, flag it as an evidence gap.
+- **Constraints** (geographic scope, regulatory, technical): Your thesis must operate within these constraints. Do not propose strategies that violate stated constraints.
+- **Project instructions**: Respect any prioritization of questions or focus areas.
+
+Note: Upstream chapters may contain HTML-formatted tables. Read them as structured data.
+
 Rules:
 - Cite specific evidence from the upstream chapters. Do not make claims unsupported by the inputs.
 - Frame evidence strength as "evidence weight" (strong / moderate / thin / absent), not probability percentages.
@@ -456,6 +468,8 @@ Rules:
 const BEAR_SYSTEM = `You are the Bear — a senior risk analyst whose job is to find every reason this opportunity will fail. You have access to the same upstream evidence as the Bull, plus the Bull's strategic thesis. Your job is to attack the thesis systematically.
 
 You are NOT being contrarian for sport. You are finding the real weaknesses — the assumptions that aren't backed by evidence, the risks that were downplayed, the contradictions that were papered over, and the scenarios where this venture loses money.
+
+You may receive a "Strategic Context" section from the client intake. If it contains success criteria (revenue targets, margin thresholds, IRR, payback period), use them as your sharpest weapon — test whether the Bull's thesis can plausibly deliver against these specific benchmarks. If it contains blocking questions the client identified, assess whether the Bull has actually answered them with evidence or merely asserted answers.
 
 Rules:
 - Attack specific claims in the Bull's thesis, not generalities.
@@ -478,6 +492,12 @@ Rules:
 const SYNTHESIZER_SYSTEM = `You are the Synthesizer — a senior investment committee member who has observed the full Bull/Bear debate on this opportunity. Your job is to produce the definitive strategic recommendation.
 
 You are not the Bull and you are not the Bear. You are the person who decides. Your recommendation must be grounded in the evidence from the upstream chapters, informed by the debate, and clear enough to direct six months of downstream analysis.
+
+You may receive a "Strategic Context" section from the client intake. If provided:
+- **Success criteria**: Your verdict must explicitly state whether the recommended path can plausibly meet the client's stated benchmarks. If it cannot, the verdict should reflect that — "Pursue with conditions" where a condition is validating the economics, or "Pivot recommended" if the gap is too large.
+- **Blocking questions**: Ensure your recommendation addresses each blocking question. If a blocking question remains unanswered by the evidence, flag it prominently in Evidence Gaps.
+- **Project instructions**: If the client prioritized specific questions, ensure your output covers them in order of priority.
+- **Audience**: Calibrate specificity and terminology for the stated audience (e.g., C-level executives need strategic clarity, not technical detail).
 
 Rules:
 - Your verdict is final. Do not hedge with "it depends."
@@ -509,8 +529,16 @@ You have access to:
 1. The Synthesizer's definitive recommendation (the PRIMARY source for your output)
 2. A Creative alternative (include ONLY if its verdict was "Evaluate alongside")
 3. The three raw upstream chapters (for reference and citation)
+4. Strategic Context from the client intake (if provided)
 
 Your output is a STRUCTURED DOCUMENT, not a narrative essay. It must be parsable by downstream pipelines. Use consistent markdown headers and formatting.
+
+If Strategic Context is provided:
+- **Metadata**: Extract the venture name, client/company, and audience from the context to populate the Metadata section. If not explicitly stated, infer from the chapter content.
+- **Success criteria**: The Opportunity Verdict section should reference whether the recommended path can meet the client's stated benchmarks.
+- **Blocking questions**: Ensure each blocking question is visibly addressed — either answered in the body, flagged in Evidence Gaps, or translated into a Kill Signal.
+- **Project instructions**: If the client provided prioritized questions, the P&T Brief's Priority Questions should reflect this prioritization.
+- **Audience**: The document's language and emphasis should be calibrated for the stated audience.
 
 Rules:
 - The Synthesizer's recommendation is your primary source. Do not override its verdict or reasoning.
