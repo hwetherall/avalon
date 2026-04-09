@@ -86,18 +86,7 @@ export async function runAllScouts(cartographerOutput, ventureName, onScoutUpdat
 
   const notify = onScoutUpdate || (() => {})
 
-  // Build path briefs with venture name
-  const pathBriefs = paths.map(path => ({
-    pathId: path.id,
-    pathName: path.name || `Path ${path.id}`,
-    thesis: path.thesis || 'No thesis extracted',
-    coreBet: path.coreBet || 'No core bet extracted',
-    evidenceFor: path.evidenceFor || 'Not available',
-    evidenceAgainst: path.evidenceAgainst || 'Not available',
-    investigationQuestions: path.investigationQuestions || 'No investigation questions extracted',
-    pathType: path.pathType || 'Unknown',
-    ventureName,
-  }))
+  const pathBriefs = buildPathBriefs(paths, ventureName)
 
   // Initialize all scouts as queued
   for (const brief of pathBriefs) {
@@ -122,13 +111,14 @@ export async function runAllScouts(cartographerOutput, ventureName, onScoutUpdat
     })
       .then(result => {
         const succeeded = result.field_report != null
+        const failureReason = result.error || (!succeeded ? 'Scout did not produce a field report.' : null)
         notify(brief.pathId, {
           status: succeeded ? 'complete' : 'error',
           pathName: brief.pathName,
           fieldReport: result.field_report,
           queriesRun: result.queries_run || 0,
           deepDive: result.deep_dive_triggered,
-          error: result.error || null,
+          error: succeeded ? null : failureReason,
         })
         return { ...result, pathId: brief.pathId, pathName: brief.pathName }
       })
@@ -182,6 +172,84 @@ export async function runAllScouts(cartographerOutput, ventureName, onScoutUpdat
   // Don't throw on partial failure — return what we have.
   // The orchestrator decides whether to continue.
   return results
+}
+
+function buildPathBriefs(paths, ventureName) {
+  return paths.map(path => ({
+    pathId: path.id,
+    pathName: path.name || `Path ${path.id}`,
+    thesis: path.thesis || 'No thesis extracted',
+    coreBet: path.coreBet || 'No core bet extracted',
+    evidenceFor: path.evidenceFor || 'Not available',
+    evidenceAgainst: path.evidenceAgainst || 'Not available',
+    investigationQuestions: path.investigationQuestions || 'No investigation questions extracted',
+    pathType: path.pathType || 'Unknown',
+    ventureName,
+  }))
+}
+
+/**
+ * Re-run a single scout by path id (e.g. "P4"). Used when a path failed or timed out.
+ */
+export async function runSingleScout(cartographerOutput, ventureName, pathId, onScoutUpdate) {
+  const paths = parseCartographerPaths(cartographerOutput)
+  const pathBriefs = buildPathBriefs(paths, ventureName)
+  const brief = pathBriefs.find(b => b.pathId === pathId)
+  if (!brief) {
+    throw new Error(`No path "${pathId}" found in Cartographer output.`)
+  }
+
+  const notify = onScoutUpdate || (() => {})
+
+  const onPhase = (phase, detail) => {
+    notify(brief.pathId, {
+      status: 'running',
+      phase,
+      pathName: brief.pathName,
+      ...detail,
+    })
+  }
+
+  notify(brief.pathId, { status: 'running', phase: 'starting', pathName: brief.pathName })
+
+  let result
+  try {
+    result = await runScoutWithRetry(brief, onPhase)
+  } catch (err) {
+    notify(brief.pathId, {
+      status: 'error',
+      pathName: brief.pathName,
+      error: err.message,
+    })
+    return {
+      pathId: brief.pathId,
+      pathName: brief.pathName,
+      status: 'error',
+      fieldReport: null,
+      queriesRun: 0,
+      error: err.message,
+    }
+  }
+
+  const succeeded = result.field_report != null
+  const failureReason = result.error || (!succeeded ? 'Scout did not produce a field report.' : null)
+  notify(brief.pathId, {
+    status: succeeded ? 'complete' : 'error',
+    pathName: brief.pathName,
+    fieldReport: result.field_report,
+    queriesRun: result.queries_run || 0,
+    deepDive: result.deep_dive_triggered,
+    error: succeeded ? null : failureReason,
+  })
+
+  return {
+    pathId: brief.pathId,
+    pathName: brief.pathName,
+    status: succeeded ? 'complete' : 'error',
+    fieldReport: result.field_report || null,
+    queriesRun: result.queries_run || 0,
+    error: succeeded ? null : failureReason,
+  }
 }
 
 function sleep(ms) {

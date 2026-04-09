@@ -34,7 +34,7 @@ const DOT_STYLES = {
   error: 'bg-red-400',
 }
 
-export default function ScoutPanel({ scoutStates }) {
+export default function ScoutPanel({ scoutStates, onRerunScout, rerunningScoutPathId }) {
   if (!scoutStates || Object.keys(scoutStates).length === 0) {
     return null
   }
@@ -57,14 +57,20 @@ export default function ScoutPanel({ scoutStates }) {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
         {entries.map(([pathId, state]) => (
-          <ScoutCard key={pathId} pathId={pathId} state={state} />
+          <ScoutCard
+            key={pathId}
+            pathId={pathId}
+            state={state}
+            onRerunScout={onRerunScout}
+            rerunningScoutPathId={rerunningScoutPathId}
+          />
         ))}
       </div>
     </div>
   )
 }
 
-function ScoutCard({ pathId, state }) {
+function ScoutCard({ pathId, state, onRerunScout, rerunningScoutPathId }) {
   const [expanded, setExpanded] = useState(false)
   const phase = state.status === 'complete' ? 'complete'
     : state.status === 'error' ? 'error'
@@ -116,9 +122,19 @@ function ScoutCard({ pathId, state }) {
         <p className="text-[10px] text-gray-500 mt-1 italic">{state.message}</p>
       )}
 
-      {isError && state.error && (
-        <div className="mt-2 p-1.5 rounded bg-red-500/10 border border-red-500/20 text-[10px] text-red-300 font-mono">
-          {state.error}
+      {isError && (
+        <div className="mt-2 p-1.5 rounded bg-red-500/10 border border-red-500/20 text-[10px] text-red-300 font-mono space-y-2">
+          <p>{state.error || 'Scout did not return a field report (no error details).'}</p>
+          {onRerunScout && (
+            <button
+              type="button"
+              onClick={() => onRerunScout(pathId)}
+              disabled={rerunningScoutPathId === pathId || isRunning}
+              className="px-2 py-1 rounded text-[10px] font-medium bg-surface-700 border border-surface-500 text-gray-200 hover:bg-surface-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {rerunningScoutPathId === pathId ? 'Rerunning…' : 'Rerun scout'}
+            </button>
+          )}
         </div>
       )}
 

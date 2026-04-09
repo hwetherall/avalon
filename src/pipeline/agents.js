@@ -3,26 +3,26 @@ export const AGENT_META = {
   '1a': {
     name: 'Tension: DV × MR',
     role: 'Cross-chapter tension analyst',
-    model: 'Claude Opus 4.6',
+    model: 'gpt-5.4 mini',
     description: 'Comparing Demand Validation and Market Research for alignment, tension, and implications.',
   },
   '1b': {
     name: 'Tension: DV × CA',
     role: 'Cross-chapter tension analyst',
-    model: 'Claude Opus 4.6',
+    model: 'gpt-5.4 mini',
     description: 'Comparing Demand Validation and Competitor Analysis for alignment, tension, and implications.',
   },
   '1c': {
     name: 'Tension: MR × CA',
     role: 'Cross-chapter tension analyst',
-    model: 'Claude Opus 4.6',
+    model: 'gpt-5.4 mini',
     description: 'Comparing Market Research and Competitor Analysis for alignment, tension, and implications.',
   },
   '1.5a': {
     name: 'Path Cartographer',
     role: 'Strategic scenario planner',
     model: 'Claude Opus 4.6',
-    description: 'Enumerating 5\u20136 distinct strategic paths from the upstream evidence before evaluation begins.',
+    description: 'Enumerating 5–6 distinct strategic paths from the upstream evidence before evaluation begins.',
   },
   '2.scout': {
     name: 'Scouts',
@@ -30,40 +30,40 @@ export const AGENT_META = {
     model: 'gpt-5.4 + Tavily',
     description: 'Investigating each strategic path with targeted web research.',
   },
-  '2a': {
-    name: 'Bull Thesis',
+  '3a': {
+    name: 'War Table',
+    role: 'Strategic evaluation panel',
+    model: 'Claude Opus 4.6',
+    description: 'Comparing all scouted paths and producing a ranked recommendation.',
+  },
+  '3b-i': {
+    name: 'Focused Bull',
     role: 'Senior investment strategist',
     model: 'Claude Opus 4.6',
-    description: 'Constructing the strongest evidence-backed case for pursuing the opportunity.',
+    description: 'Building the strongest case for the chosen path using scout evidence.',
   },
-  '2b': {
-    name: 'Bear Attack',
+  '3b-ii': {
+    name: 'Focused Bear',
     role: 'Senior risk analyst',
     model: 'Gemini 3.1 Pro',
-    description: 'Systematically dismantling the Bull\'s thesis — finding weaknesses, contradictions, and risks.',
+    description: 'Attacking the chosen path — using scout red flags and opportunity cost analysis.',
   },
-  '2c': {
-    name: 'Bull Rebuttal',
+  '3b-iii': {
+    name: 'Focused Rebuttal',
     role: 'Senior investment strategist',
     model: 'Claude Opus 4.6',
-    description: 'Responding to the Bear\'s criticisms with a refined, stress-tested thesis.',
+    description: 'Refining the thesis after the Bear\'s attack on the chosen path.',
   },
-  '2d': {
-    name: 'Synthesizer',
+  '3b-iv': {
+    name: 'Focused Synthesizer',
     role: 'Investment committee judge',
     model: 'Claude Opus 4.6',
-    description: 'Weighing the full debate and producing the definitive strategic recommendation.',
+    description: 'Producing the definitive recommendation for the chosen path.',
   },
-  '2e': {
-    name: 'Creative Alternative',
-    role: 'Lateral strategist',
-    model: 'Gemini 3.1 Pro',
-    description: 'Proposing a genuinely different strategic path that the debate may have missed.',
-  },
-  '3a': {
-    name: 'Final Assembly',
+  '3c': {
+    name: 'V2 Assembly',
     role: 'Document assembly',
     model: 'Claude Opus 4.6',
-    description: 'Producing the structured Information Passport with P&T downstream brief.',
+    description: 'Producing the V2 Information Passport with path context and scout evidence.',
   },
 }

@@ -53,6 +53,10 @@ export default function StepCard({ stepId, state }) {
         <p className="text-xs text-gray-500 mt-2 italic">{meta.description}</p>
       )}
 
+      {status === 'waiting' && state?.output && (
+        <p className="text-xs text-amber-300/90 mt-2">{state.output}</p>
+      )}
+
       {status === 'error' && state?.error && (
         <div className="mt-3 p-2 rounded bg-red-500/10 border border-red-500/20 text-xs text-red-300 font-mono">
           {state.error}

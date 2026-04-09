@@ -103,12 +103,13 @@ export const DEMO_STEP_OUTPUTS = {
   '1b': tension1b,
   '1c': tension1c,
   '1.5a': cartographer,
-  '2a': bull,
-  '2b': bear,
-  '2c': rebuttal,
-  '2d': synthesizer,
-  '2e': creative,
-  '3a': passport,
+  '2.scout': '*Demo mode — scout data pre-computed.*',
+  '3a': '*Demo mode — War Table ranking pre-computed.*',
+  '3b-i': bull,
+  '3b-ii': bear,
+  '3b-iii': rebuttal,
+  '3b-iv': synthesizer,
+  '3c': passport,
 }
 
 export const DEMO_PASSPORT = passport

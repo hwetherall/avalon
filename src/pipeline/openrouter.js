@@ -1,21 +1,21 @@
 const MODEL_MAP = {
-  tension_dm:    'anthropic/claude-opus-4.6',
-  tension_dc:    'anthropic/claude-opus-4.6',
-  tension_mc:    'anthropic/claude-opus-4.6',
-  cartographer:  'anthropic/claude-opus-4.6',
-  scout_planner: 'openai/gpt-5.4-mini',
-  scout_synth:   'openai/gpt-5.4',
-  bull:          'anthropic/claude-opus-4.6',
-  bear:          'google/gemini-3.1-pro-preview',
-  rebuttal:      'anthropic/claude-opus-4.6',
-  synthesizer:   'anthropic/claude-opus-4.6',
-  creative:      'google/gemini-3.1-pro-preview',
-  assembly:      'anthropic/claude-opus-4.6',
+  tension_dm:          'openai/gpt-5.4-mini',
+  tension_dc:          'openai/gpt-5.4-mini',
+  tension_mc:          'openai/gpt-5.4-mini',
+  cartographer:        'anthropic/claude-opus-4.6',
+  scout_planner:       'openai/gpt-5.4-mini',
+  scout_synth:         'openai/gpt-5.4',
+  war_table:           'anthropic/claude-opus-4.6',
+  focused_bull:        'anthropic/claude-opus-4.6',
+  focused_bear:        'google/gemini-3.1-pro-preview',
+  focused_rebuttal:    'anthropic/claude-opus-4.6',
+  focused_synthesizer: 'anthropic/claude-opus-4.6',
+  assembly_v2:         'anthropic/claude-opus-4.6',
 }
 
 const FALLBACK_MODEL = 'anthropic/claude-opus-4.6'
 
-const GEMINI_AGENTS = new Set(['bear', 'creative'])
+const GEMINI_AGENTS = new Set(['focused_bear'])
 
 export async function callLLM(agentId, systemPrompt, userPrompt, { maxTokens = 8192, onRetry } = {}) {
   const model = MODEL_MAP[agentId]

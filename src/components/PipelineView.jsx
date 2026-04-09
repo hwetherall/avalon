@@ -6,11 +6,12 @@ const GROUPS = [
   { id: 1, label: 'Step 1: Pairwise Tension Analysis', description: '3 parallel calls comparing chapter pairs' },
   { id: 2, label: 'Step 1.5: Path Cartographer', description: 'Enumerating strategic paths from upstream evidence' },
   { id: 2.5, label: 'Step 2: Scouts', description: 'Parallel web research for each strategic path' },
-  { id: 3, label: 'Step 2.5: Adversarial Strategic Debate', description: 'Bull \u2192 Bear \u2192 Rebuttal \u2192 Synthesizer + Creative' },
-  { id: 4, label: 'Step 3: Final Assembly', description: 'Information Passport + P&T Brief' },
+  { id: 3, label: 'Step 3a: War Table', description: 'Comparative evaluation + ranked recommendation' },
+  { id: 4, label: 'Step 3b: Focused Adversarial Debate', description: 'Bull → Bear → Rebuttal → Synthesizer on chosen path' },
+  { id: 5, label: 'Step 3c: Final Assembly', description: 'V2 Information Passport with path context + scout evidence' },
 ]
 
-export default function PipelineView({ stepStates }) {
+export default function PipelineView({ stepStates, onRerunScout, rerunningScoutPathId }) {
   const completedCount = Object.values(stepStates).filter(s => s.status === 'complete').length
   const totalSteps = STEPS.length
   const progress = (completedCount / totalSteps) * 100
@@ -33,6 +34,15 @@ export default function PipelineView({ stepStates }) {
       <div className="space-y-8">
         {GROUPS.map(group => {
           const groupSteps = STEPS.filter(s => s.group === group.id)
+          if (groupSteps.length === 0) return null
+
+          // Don't show post-selection groups if none of their steps have started
+          const anyStarted = groupSteps.some(s => {
+            const state = stepStates[s.id]
+            return state && state.status !== 'waiting'
+          })
+          const isPostSelection = group.id >= 4
+          if (isPostSelection && !anyStarted) return null
 
           return (
             <div key={group.id}>
@@ -49,24 +59,22 @@ export default function PipelineView({ stepStates }) {
                       <StepCard stepId={step.id} state={stepStates[step.id]} />
                       {stepStates[step.id]?.scouts && (
                         <div className="mt-3">
-                          <ScoutPanel scoutStates={stepStates[step.id].scouts} />
+                          <ScoutPanel
+                            scoutStates={stepStates[step.id].scouts}
+                            onRerunScout={onRerunScout}
+                            rerunningScoutPathId={rerunningScoutPathId}
+                          />
                         </div>
                       )}
                     </div>
                   ))}
                 </div>
-              ) : group.id === 3 ? (
+              ) : group.id === 4 ? (
+                /* Debate group: 3b-i through 3b-iv are sequential */
                 <div className="space-y-3">
-                  {/* 2a, 2b, 2c are sequential */}
-                  {groupSteps.filter(s => ['2a', '2b', '2c'].includes(s.id)).map(step => (
+                  {groupSteps.map(step => (
                     <StepCard key={step.id} stepId={step.id} state={stepStates[step.id]} />
                   ))}
-                  {/* 2d and 2e are parallel */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {groupSteps.filter(s => ['2d', '2e'].includes(s.id)).map(step => (
-                      <StepCard key={step.id} stepId={step.id} state={stepStates[step.id]} />
-                    ))}
-                  </div>
                 </div>
               ) : (
                 <div className={`grid gap-3 ${group.id === 1 ? 'grid-cols-1 md:grid-cols-3' : 'grid-cols-1'}`}>
