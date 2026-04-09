@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import MarkdownRenderer from './MarkdownRenderer.jsx'
 
-export default function PassportView({ passport, onReset }) {
+export default function PassportView({ passport, onReset, onLaunchPrimate }) {
   const [copied, setCopied] = useState(false)
 
   const handleCopy = async () => {
@@ -61,6 +61,31 @@ export default function PassportView({ passport, onReset }) {
       <div className="bg-surface-800 border border-surface-600 rounded-lg p-6 md:p-8 passport-section">
         <MarkdownRenderer content={passport} />
       </div>
+
+      {/* Primate launch CTA */}
+      {onLaunchPrimate && (
+        <div className="mt-8 p-6 bg-surface-800 border border-violet-500/30 rounded-lg">
+          <div className="flex items-start gap-4">
+            <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-violet-500/20 flex items-center justify-center">
+              <span className="text-lg">🔬</span>
+            </div>
+            <div className="flex-1">
+              <h3 className="text-sm font-semibold text-gray-100 mb-1">Launch Deep Research (Primate)</h3>
+              <p className="text-xs text-gray-400 mb-3 leading-relaxed">
+                Send in the full army. Primate runs 6 parallel research tracks — technology maturity, reference
+                architecture, components, regulatory, patent landscape, and talent — producing structured evidence
+                packages for the P&T chapter. This takes 25–35 minutes and uses the passport above as its steering input.
+              </p>
+              <button
+                onClick={onLaunchPrimate}
+                className="px-5 py-2.5 text-sm font-semibold rounded-lg bg-violet-600 text-white hover:bg-violet-500 transition-colors"
+              >
+                Launch Deep Research
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

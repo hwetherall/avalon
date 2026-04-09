@@ -66,4 +66,60 @@ export const AGENT_META = {
     model: 'Claude Opus 4.6',
     description: 'Producing the V2 Information Passport with path context and scout evidence.',
   },
+
+  // ── Primate (P&T Deep Research) ──
+  'pr-plan': {
+    name: 'Smart Planner',
+    role: 'Research planning engine',
+    model: 'Claude Opus 4.6',
+    description: 'Generating per-track research plans from the Avalon passport.',
+  },
+  'pr-t1': {
+    name: 'T1: Tech State-of-the-Art',
+    role: 'Technology maturity researcher',
+    model: 'gpt-5.4 + Tavily + S2',
+    description: 'Researching technology maturity, benchmarks, and commercial availability.',
+  },
+  'pr-t2': {
+    name: 'T2: Reference Architecture',
+    role: 'Architecture precedent researcher',
+    model: 'gpt-5.4 + Tavily + S2',
+    description: 'Researching build precedents, failure modes, and architectural patterns.',
+  },
+  'pr-t3': {
+    name: 'T3: Component & Dependency',
+    role: 'Ecosystem researcher',
+    model: 'gpt-5.4 + Tavily',
+    description: 'Researching vendors, components, lead times, and lock-in risks.',
+  },
+  'pr-t4': {
+    name: 'T4: Regulatory & Standards',
+    role: 'Compliance researcher',
+    model: 'gpt-5.4 + Tavily',
+    description: 'Researching regulations, certifications, and critical-path approvals.',
+  },
+  'pr-t5': {
+    name: 'T5: Patent & IP Landscape',
+    role: 'IP landscape researcher',
+    model: 'gpt-5.4 + Tavily + S2',
+    description: 'Scanning patent clusters, FTO risk areas, and parent company portfolio.',
+  },
+  'pr-t6': {
+    name: 'T6: Talent & Capability',
+    role: 'Talent market researcher',
+    model: 'gpt-5.4 + Tavily + S2',
+    description: 'Researching talent scarcity, parent company capabilities, and expertise hubs.',
+  },
+  'pr-synth': {
+    name: 'Evidence Synthesis',
+    role: 'Per-track evidence packager',
+    model: 'gpt-5.4',
+    description: 'Synthesizing raw research into structured evidence packages.',
+  },
+  'pr-kill': {
+    name: 'Kill Signal Assessment',
+    role: 'Cross-track evaluator',
+    model: 'Claude Opus 4.6',
+    description: 'Evaluating kill signals against combined evidence from all tracks.',
+  },
 }

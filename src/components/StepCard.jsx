@@ -11,9 +11,9 @@ const STATUS_STYLES = {
 
 export default function StepCard({ stepId, state }) {
   const [expanded, setExpanded] = useState(false)
-  const meta = AGENT_META[stepId]
+  const meta = AGENT_META[stepId] || { name: stepId, role: '', model: '', description: '' }
   const status = state?.status || 'waiting'
-  const style = STATUS_STYLES[status]
+  const style = STATUS_STYLES[status] || STATUS_STYLES.waiting
 
   const elapsed = state?.timestamp && state?.startTime
     ? ((state.timestamp - state.startTime) / 1000).toFixed(1)

@@ -4,18 +4,23 @@ import PipelineView from './components/PipelineView.jsx'
 import PassportView from './components/PassportView.jsx'
 import PathSelection from './components/PathSelection.jsx'
 import ScoutIncompleteGate from './components/ScoutIncompleteGate.jsx'
-import { runPreSelection, runPostSelection, STEPS } from './pipeline/orchestrator.js'
+import PrimateView from './components/PrimateView.jsx'
+import { runPreSelection, runPostSelection, STEPS, POST_SELECTION_STEPS } from './pipeline/orchestrator.js'
 import { runSingleScout } from './pipeline/scoutOrchestrator.js'
+import { runWarTable } from './pipeline/warTable.js'
+import { runPrimate, PRIMATE_STEPS } from './pipeline/primateOrchestrator.js'
 // Demo data is lazy-loaded only when the user clicks Demo
 const loadDemoData = () => import('./demo/demoData.js')
 
 const PHASES = {
   INPUT: 'input',
   RUNNING: 'running',
-  SCOUT_GATE: 'scout_gate', // Incomplete scouts — user must confirm before War Table
-  SELECTING: 'selecting',   // User selection gate between pre- and post-selection
+  SCOUT_GATE: 'scout_gate',
+  SELECTING: 'selecting',
   RUNNING_POST: 'running_post',
   COMPLETE: 'complete',
+  RUNNING_PRIMATE: 'running_primate',
+  PRIMATE_COMPLETE: 'primate_complete',
   ERROR: 'error',
 }
 
@@ -34,6 +39,10 @@ export default function App() {
   /** Promise controls for incomplete-scout gate (resume or cancel on reset) */
   const scoutGateRef = useRef(null)
   const [rerunningScoutPathId, setRerunningScoutPathId] = useState(null)
+
+  // Primate (P&T deep research) state
+  const [primateStepStates, setPrimateStepStates] = useState({})
+  const [primateResults, setPrimateResults] = useState(null)
 
   const updateStep = useCallback((stepId, update) => {
     if (update.status === 'running') {
@@ -110,6 +119,12 @@ export default function App() {
     setPhase(PHASES.RUNNING_POST)
     setPipelineError(null)
 
+    // Eagerly mark post-selection steps so PipelineView renders the group immediately
+    for (const step of POST_SELECTION_STEPS) {
+      updateStep(step.id, { status: 'waiting', output: null, error: null })
+    }
+    updateStep('3b-i', { status: 'running', output: null, error: null })
+
     try {
       const result = await runPostSelection(
         preSelectionRef.current,
@@ -163,6 +178,8 @@ export default function App() {
     setPipelineError(null)
     setIsDemo(false)
     setRerunningScoutPathId(null)
+    setPrimateStepStates({})
+    setPrimateResults(null)
     startTimesRef.current = {}
     preSelectionRef.current = null
     scoutContextRef.current = null
@@ -210,6 +227,26 @@ export default function App() {
         const i = list.findIndex(r => r.pathId === pathId)
         if (i >= 0) list[i] = row
         else list.push(row)
+
+        // If War Table already ran (SELECTING phase), re-run it with updated scout data
+        if (phase === PHASES.SELECTING && result.fieldReport) {
+          updateStep('3a', { status: 'running', output: null, error: null })
+          try {
+            const { cartographerOutput, scoutResults, chapters, userContext } = preSelectionRef.current
+            const warTableOutput = await runWarTable(cartographerOutput, scoutResults, chapters, userContext)
+            preSelectionRef.current.warTableOutput = warTableOutput
+            const rankingSummary = (warTableOutput.ranking || [])
+              .map(r => `#${r.rank} ${r.path_name} — ${r.elevator_pitch}`)
+              .join('\n')
+            const recSummary = warTableOutput.innovera_recommendation
+              ? `\n\n**Innovera Recommends:** ${warTableOutput.innovera_recommendation.recommended_path_name}`
+              : ''
+            updateStep('3a', { status: 'complete', output: rankingSummary + recSummary })
+          } catch (wtErr) {
+            console.warn('War Table re-run failed after scout rerun:', wtErr.message)
+            updateStep('3a', { status: 'error', output: null, error: `War Table re-run failed: ${wtErr.message}` })
+          }
+        }
       }
     } catch (err) {
       const existing = preSelectionRef.current?.scoutResults?.find(r => r.pathId === pathId)
@@ -225,7 +262,54 @@ export default function App() {
     } finally {
       setRerunningScoutPathId(null)
     }
-  }, [getScoutRerunContext, updateStep])
+  }, [getScoutRerunContext, updateStep, phase])
+
+  // ── Primate step updater ──
+  const updatePrimateStep = useCallback((stepId, update) => {
+    if (update.status === 'running') {
+      startTimesRef.current[stepId] = startTimesRef.current[stepId] || Date.now()
+    }
+    setPrimateStepStates(prev => ({
+      ...prev,
+      [stepId]: {
+        ...(prev[stepId] || {}),
+        ...update,
+        startTime: startTimesRef.current[stepId] || Date.now(),
+      },
+    }))
+  }, [])
+
+  // ── Launch Primate (P&T Deep Research) ──
+  const handleLaunchPrimate = useCallback(async () => {
+    setPhase(PHASES.RUNNING_PRIMATE)
+    setPipelineError(null)
+    setPrimateResults(null)
+
+    const initial = {}
+    for (const step of PRIMATE_STEPS) {
+      initial[step.id] = { status: 'waiting', output: null, error: null }
+    }
+    initial['pr-plan'] = { status: 'running', output: null, error: null }
+    setPrimateStepStates(initial)
+
+    try {
+      const result = await runPrimate({
+        passport,
+        ventureBrief: preSelectionRef.current?.userContext || '',
+        onStep: updatePrimateStep,
+      })
+      setPrimateResults(result)
+      setPhase(PHASES.PRIMATE_COMPLETE)
+    } catch (err) {
+      setPipelineError(err.message)
+      setPhase(PHASES.ERROR)
+    }
+  }, [passport, updatePrimateStep])
+
+  // ── Return to passport from Primate ──
+  const handleBackToPassport = useCallback(() => {
+    setPhase(PHASES.COMPLETE)
+  }, [])
 
   const isRunning = phase === PHASES.RUNNING || phase === PHASES.RUNNING_POST
 
@@ -260,7 +344,7 @@ export default function App() {
             />
 
             {phase === PHASES.SCOUT_GATE && (
-              <ScoutIncompleteGate onContinue={handleContinueToWarTable} disabled={false} />
+              <ScoutIncompleteGate onContinue={handleContinueToWarTable} disabled={!!rerunningScoutPathId} />
             )}
 
             {phase === PHASES.ERROR && pipelineError && (
@@ -315,9 +399,31 @@ export default function App() {
               rerunningScoutPathId={rerunningScoutPathId}
             />
             <div className="border-t border-surface-600 pt-8">
-              <PassportView passport={passport} onReset={handleReset} />
+              <PassportView
+                passport={passport}
+                onReset={handleReset}
+                onLaunchPrimate={isDemo ? undefined : handleLaunchPrimate}
+              />
             </div>
           </div>
+        )}
+
+        {/* Primate Running Phase */}
+        {phase === PHASES.RUNNING_PRIMATE && (
+          <PrimateView
+            stepStates={primateStepStates}
+            primateResults={null}
+            onReset={handleBackToPassport}
+          />
+        )}
+
+        {/* Primate Complete Phase */}
+        {phase === PHASES.PRIMATE_COMPLETE && primateResults && (
+          <PrimateView
+            stepStates={primateStepStates}
+            primateResults={primateResults}
+            onReset={handleBackToPassport}
+          />
         )}
       </div>
     </div>

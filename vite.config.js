@@ -52,6 +52,50 @@ export default defineConfig(({ mode }) => {
             }
           })
 
+          // ── /api/semantic-scholar — Semantic Scholar proxy ──
+          server.middlewares.use('/api/semantic-scholar', async (req, res) => {
+            if (req.method !== 'POST') {
+              res.statusCode = 405
+              res.end(JSON.stringify({ error: 'Method not allowed' }))
+              return
+            }
+
+            let body = ''
+            for await (const chunk of req) {
+              body += chunk
+            }
+
+            try {
+              const parsed = JSON.parse(body)
+              const { query, limit = 5 } = parsed
+
+              if (!query) {
+                res.statusCode = 400
+                res.end(JSON.stringify({ error: 'query is required' }))
+                return
+              }
+
+              const params = new URLSearchParams({
+                query,
+                limit: String(limit),
+                fields: 'paperId,title,abstract,year,citationCount,url,authors',
+              })
+
+              const upstream = await fetch(
+                `https://api.semanticscholar.org/graph/v1/paper/search?${params}`,
+                { headers: { 'Accept': 'application/json' } },
+              )
+
+              const data = await upstream.text()
+              res.setHeader('Content-Type', 'application/json')
+              res.statusCode = upstream.status
+              res.end(data)
+            } catch (err) {
+              res.statusCode = 502
+              res.end(JSON.stringify({ error: 'Failed to reach Semantic Scholar', details: err.message }))
+            }
+          })
+
           // ── /api/search-batch — Parallel multi-query Tavily proxy ──
           // (registered before /api/search to avoid prefix-match conflicts)
           server.middlewares.use('/api/search-batch', async (req, res) => {
