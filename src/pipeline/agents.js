@@ -24,6 +24,12 @@ export const AGENT_META = {
     model: 'Claude Opus 4.6',
     description: 'Enumerating 5\u20136 distinct strategic paths from the upstream evidence before evaluation begins.',
   },
+  '2.scout': {
+    name: 'Scouts',
+    role: 'Strategic reconnaissance',
+    model: 'gpt-5.4 + Tavily',
+    description: 'Investigating each strategic path with targeted web research.',
+  },
   '2a': {
     name: 'Bull Thesis',
     role: 'Senior investment strategist',

@@ -225,7 +225,7 @@ Each scout receives one path from the Cartographer's output. The scout does NOT 
 
 **Purpose:** Convert the Cartographer's investigation questions into executable search queries. The investigation questions are human-readable research questions; Tavily needs short, keyword-dense queries.
 
-**Model:** `openai/gpt-4.1-mini` via OpenRouter. This is a translation task, not a reasoning task. A smaller, faster model is appropriate.
+**Model:** `openai/gpt-5.4-mini` via OpenRouter. This is a translation task, not a reasoning task. A smaller, faster model is appropriate.
 
 **Prompt Template:**
 
@@ -335,7 +335,7 @@ async function runScout(pathBrief) {
 
 **Purpose:** Read all search results and produce the structured field report. This is the most important LLM call per scout — it converts raw search snippets into an evidence assessment against the path's thesis.
 
-**Model:** `openai/gpt-4.1` via OpenRouter. Needs to be good at reading messy web snippets and extracting relevant signal, but doesn't need frontier-level reasoning. The synthesis task is: "given these search results and this strategic thesis, what evidence did you find?"
+**Model:** `openai/gpt-5.4` via OpenRouter. Needs to be good at reading messy web snippets and extracting relevant signal, but doesn't need frontier-level reasoning. The synthesis task is: "given these search results and this strategic thesis, what evidence did you find?"
 
 **Prompt Template:**
 
@@ -555,13 +555,13 @@ async function runScoutWithTimeout(pathBrief, timeoutMs = 120_000) {
 
 | Role | Model | Via | Rationale |
 |------|-------|-----|-----------|
-| Phase A: Query Planning | `openai/gpt-4.1-mini` | OpenRouter | Translation task. Speed and cost matter more than reasoning depth. |
+| Phase A: Query Planning | `openai/gpt-5.4-mini` | OpenRouter | Translation task. Speed and cost matter more than reasoning depth. |
 | Phase C: Deep Dive Decision | (bundled into Phase D) | — | Not a separate call — the synthesis model handles this. |
-| Phase D: Synthesis | `openai/gpt-4.1` | OpenRouter | Good at extracting signal from noisy web content. Strong JSON output. Lower cost than Opus for a task that's synthesis, not strategic reasoning. |
+| Phase D: Synthesis | `openai/gpt-5.4` | OpenRouter | Good at extracting signal from noisy web content. Strong JSON output. Lower cost than Opus for a task that's synthesis, not strategic reasoning. |
 
 ### Why Not Opus for Scouts
 
-The scouts' LLM tasks are: (1) convert research questions to search queries, and (2) read search results and extract relevant evidence. These are comprehension and synthesis tasks, not strategic reasoning. GPT-4.1 handles this well at ~4x lower cost than Opus. The Cartographer already did the strategic thinking; the scouts are executing a defined research brief.
+The scouts' LLM tasks are: (1) convert research questions to search queries, and (2) read search results and extract relevant evidence. These are comprehension and synthesis tasks, not strategic reasoning. gpt-5.4 handles this well at ~4x lower cost than Opus. The Cartographer already did the strategic thinking; the scouts are executing a defined research brief.
 
 ### Why Not Gemini for Diversity
 
@@ -724,7 +724,7 @@ Compare to V1's full pipeline (Steps 1–3, including Assembly): ~$8–12, ~90�
 '2.scout': {
   name: 'Scouts',
   role: 'Strategic reconnaissance',
-  model: 'GPT-4.1 + Tavily',
+  model: 'gpt-5.4 + Tavily',
   description: 'Investigating each strategic path with targeted web research.',
   // Individual scout status tracked separately in pipeline state
 },
@@ -805,7 +805,7 @@ This gives the synthesis model clear query-to-result mapping so it can assess wh
 
 ### Token Budget for Search Results
 
-Each search result snippet is ~100–150 tokens. With 3 results per query and 4–6 queries, that's ~1,200–2,700 tokens of search content. Adding the path brief (~500 tokens) and system prompt (~800 tokens), total Phase D input is ~2,500–4,000 tokens. Well within GPT-4.1's context window and economical.
+Each search result snippet is ~100–150 tokens. With 3 results per query and 4–6 queries, that's ~1,200–2,700 tokens of search content. Adding the path brief (~500 tokens) and system prompt (~800 tokens), total Phase D input is ~2,500–4,000 tokens. Well within gpt-5.4's context window and economical.
 
 If Phase C deep dive runs, add ~600–900 tokens of follow-up results. Still modest.
 

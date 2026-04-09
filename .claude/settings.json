@@ -5,7 +5,9 @@
       "Bash(npm install:*)",
       "Bash(npm run:*)",
       "Bash(node -e ':*)",
-      "Read(//c/Users/hweth/OneDrive/Desktop/Innovera/Rapid/ Prototyping/avalon/src/pipeline/**)"
+      "Read(//c/Users/hweth/OneDrive/Desktop/Innovera/Rapid/ Prototyping/avalon/src/pipeline/**)",
+      "Bash(xxd)",
+      "Bash(npx vite:*)"
     ]
   }
 }

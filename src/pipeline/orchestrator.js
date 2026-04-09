@@ -1,11 +1,13 @@
 import { callLLM } from './openrouter.js'
 import { buildPrompt } from './prompts.js'
+import { runAllScouts } from './scoutOrchestrator.js'
 
 export const STEPS = [
   { id: '1a', label: 'Demand Val × Market Research', model: 'Opus 4.6', group: 1 },
   { id: '1b', label: 'Demand Val × Competitor Analysis', model: 'Opus 4.6', group: 1 },
   { id: '1c', label: 'Market Research × Competitor Analysis', model: 'Opus 4.6', group: 1 },
   { id: '1.5a', label: 'Path Cartographer', model: 'Opus 4.6', group: 2 },
+  { id: '2.scout', label: 'Scouts', model: 'gpt-5.4 + Tavily', group: 2.5 },
   { id: '2a', label: 'Bull Thesis', model: 'Opus 4.6', group: 3 },
   { id: '2b', label: 'Bear Attack', model: 'Gemini 3.1', group: 3 },
   { id: '2c', label: 'Bull Rebuttal', model: 'Opus 4.6', group: 3 },
@@ -15,8 +17,8 @@ export const STEPS = [
 ]
 
 export async function runPipeline(demval, marketResearch, competitorAnalysis, userContext, onStep) {
-  const emit = (stepId, status, output = null, error = null) => {
-    onStep(stepId, { status, output, error, timestamp: Date.now() })
+  const emit = (stepId, status, output = null, error = null, extra = null) => {
+    onStep(stepId, { status, output, error, timestamp: Date.now(), ...extra })
   }
 
   // ── STEP 1: Pairwise Tensions (parallel) ──
@@ -60,6 +62,40 @@ export async function runPipeline(demval, marketResearch, competitorAnalysis, us
   } catch (e) {
     emit('1.5a', 'error', null, e.message)
     throw new Error(`Step 1.5 failed: ${e.message}`)
+  }
+
+  // ── STEP 2: Scouts (parallel research loops) ──
+  emit('2.scout', 'running')
+  let scoutResults = []
+  try {
+    // Extract venture name from userContext or cartographer output
+    const ventureName = userContext?.match(/venture[:\s]+(.+)/i)?.[1]?.trim()
+      || cartographerOutput?.match(/venture[:\s]+(.+)/i)?.[1]?.trim()
+      || 'Venture'
+
+    scoutResults = await runAllScouts(cartographerOutput, ventureName, (pathId, update) => {
+      // Emit scout sub-updates as part of the '2.scout' step state
+      emit('2.scout', 'running', null, null, { scouts: { [pathId]: update } })
+    })
+
+    const successCount = scoutResults.filter(r => r.fieldReport).length
+    const totalCount = scoutResults.length
+
+    // Build a summary of scout results for downstream consumption
+    const scoutSummary = scoutResults
+      .filter(r => r.fieldReport)
+      .map(r => `### ${r.pathId}: ${r.pathName}\n${r.fieldReport.executive_summary}`)
+      .join('\n\n')
+
+    const statusNote = successCount < totalCount
+      ? `\n\n*${successCount}/${totalCount} scouts completed successfully.*`
+      : ''
+
+    emit('2.scout', 'complete', (scoutSummary || 'No scout reports produced.') + statusNote)
+  } catch (e) {
+    emit('2.scout', 'error', null, e.message)
+    // Scouts failing is non-fatal for the V1 debate pipeline — log and continue
+    console.warn('Scout phase failed, continuing with debate:', e.message)
   }
 
   // ── STEP 2a: Bull Thesis (sequential) ──

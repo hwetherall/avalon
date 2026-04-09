@@ -1,10 +1,12 @@
 import StepCard from './StepCard.jsx'
+import ScoutPanel from './ScoutPanel.jsx'
 import { STEPS } from '../pipeline/orchestrator.js'
 
 const GROUPS = [
   { id: 1, label: 'Step 1: Pairwise Tension Analysis', description: '3 parallel calls comparing chapter pairs' },
   { id: 2, label: 'Step 1.5: Path Cartographer', description: 'Enumerating strategic paths from upstream evidence' },
-  { id: 3, label: 'Step 2: Adversarial Strategic Debate', description: 'Bull \u2192 Bear \u2192 Rebuttal \u2192 Synthesizer + Creative' },
+  { id: 2.5, label: 'Step 2: Scouts', description: 'Parallel web research for each strategic path' },
+  { id: 3, label: 'Step 2.5: Adversarial Strategic Debate', description: 'Bull \u2192 Bear \u2192 Rebuttal \u2192 Synthesizer + Creative' },
   { id: 4, label: 'Step 3: Final Assembly', description: 'Information Passport + P&T Brief' },
 ]
 
@@ -31,7 +33,6 @@ export default function PipelineView({ stepStates }) {
       <div className="space-y-8">
         {GROUPS.map(group => {
           const groupSteps = STEPS.filter(s => s.group === group.id)
-          const isParallel = group.id === 1 || (group.id === 3 && groupSteps.some(s => s.id === '2d'))
 
           return (
             <div key={group.id}>
@@ -40,7 +41,21 @@ export default function PipelineView({ stepStates }) {
                 <p className="text-xs text-gray-500">{group.description}</p>
               </div>
 
-              {group.id === 3 ? (
+              {/* Scout group: special rendering with ScoutPanel */}
+              {group.id === 2.5 ? (
+                <div className="space-y-3">
+                  {groupSteps.map(step => (
+                    <div key={step.id}>
+                      <StepCard stepId={step.id} state={stepStates[step.id]} />
+                      {stepStates[step.id]?.scouts && (
+                        <div className="mt-3">
+                          <ScoutPanel scoutStates={stepStates[step.id].scouts} />
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : group.id === 3 ? (
                 <div className="space-y-3">
                   {/* 2a, 2b, 2c are sequential */}
                   {groupSteps.filter(s => ['2a', '2b', '2c'].includes(s.id)).map(step => (

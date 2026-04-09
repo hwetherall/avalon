@@ -1,14 +1,16 @@
 const MODEL_MAP = {
-  tension_dm:  'anthropic/claude-opus-4.6',
-  tension_dc:  'anthropic/claude-opus-4.6',
+  tension_dm:    'anthropic/claude-opus-4.6',
+  tension_dc:    'anthropic/claude-opus-4.6',
   tension_mc:    'anthropic/claude-opus-4.6',
   cartographer:  'anthropic/claude-opus-4.6',
+  scout_planner: 'openai/gpt-5.4-mini',
+  scout_synth:   'openai/gpt-5.4',
   bull:          'anthropic/claude-opus-4.6',
-  bear:        'google/gemini-3.1-pro-preview',
-  rebuttal:    'anthropic/claude-opus-4.6',
-  synthesizer: 'anthropic/claude-opus-4.6',
-  creative:    'google/gemini-3.1-pro-preview',
-  assembly:    'anthropic/claude-opus-4.6',
+  bear:          'google/gemini-3.1-pro-preview',
+  rebuttal:      'anthropic/claude-opus-4.6',
+  synthesizer:   'anthropic/claude-opus-4.6',
+  creative:      'google/gemini-3.1-pro-preview',
+  assembly:      'anthropic/claude-opus-4.6',
 }
 
 const FALLBACK_MODEL = 'anthropic/claude-opus-4.6'

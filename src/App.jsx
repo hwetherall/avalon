@@ -18,15 +18,24 @@ export default function App() {
 
   const updateStep = useCallback((stepId, update) => {
     if (update.status === 'running') {
-      startTimesRef.current[stepId] = Date.now()
+      startTimesRef.current[stepId] = startTimesRef.current[stepId] || Date.now()
     }
-    setStepStates(prev => ({
-      ...prev,
-      [stepId]: {
-        ...update,
-        startTime: startTimesRef.current[stepId] || Date.now(),
-      },
-    }))
+    setStepStates(prev => {
+      const prevStep = prev[stepId] || {}
+      // Merge scout sub-states instead of overwriting
+      const mergedScouts = update.scouts
+        ? { ...(prevStep.scouts || {}), ...update.scouts }
+        : prevStep.scouts
+      return {
+        ...prev,
+        [stepId]: {
+          ...prevStep,
+          ...update,
+          scouts: mergedScouts,
+          startTime: startTimesRef.current[stepId] || Date.now(),
+        },
+      }
+    })
   }, [])
 
   const handleSubmit = useCallback(async ({ demval, marketResearch, competitorAnalysis, userContext }) => {

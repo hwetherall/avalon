@@ -42,7 +42,7 @@ const CONTEXT_FIELDS = [
 const MIN_LENGTH = 500
 const MAX_TOTAL = 500000
 
-export default function InputPanel({ onSubmit, onDemo, disabled }) {
+export default function InputPanel({ onSubmit, onDemo, onPreload, disabled }) {
   const [chapters, setChapters] = useState({ demval: '', marketResearch: '', competitorAnalysis: '' })
   const [contextFields, setContextFields] = useState({ question: '', success: '', audience: '', background: '', instructions: '' })
   const [contextExpanded, setContextExpanded] = useState(false)
@@ -112,6 +112,25 @@ export default function InputPanel({ onSubmit, onDemo, disabled }) {
     })
   }
 
+  const handlePreload = async () => {
+    const { PRELOAD_CHAPTERS, PRELOAD_CONTEXT } = await import('../demo/preloadData.js')
+    setChapters({
+      demval: PRELOAD_CHAPTERS.demval,
+      marketResearch: PRELOAD_CHAPTERS.marketResearch,
+      competitorAnalysis: PRELOAD_CHAPTERS.competitorAnalysis,
+    })
+    setContextFields({
+      question: PRELOAD_CONTEXT.question,
+      success: PRELOAD_CONTEXT.success,
+      audience: PRELOAD_CONTEXT.audience,
+      background: PRELOAD_CONTEXT.background,
+      instructions: PRELOAD_CONTEXT.instructions,
+    })
+    setContextExpanded(true)
+    setErrors({})
+    if (onPreload) onPreload()
+  }
+
   const allFilled = CHAPTERS.every(({ key }) => chapters[key].trim().length >= MIN_LENGTH)
 
   return (
@@ -119,13 +138,22 @@ export default function InputPanel({ onSubmit, onDemo, disabled }) {
       <div className="mb-8 text-center">
         <h1 className="text-3xl font-bold text-gray-100 font-mono tracking-tight">AVALON</h1>
         <p className="text-gray-400 mt-2 text-sm">Adversarial Synthesis Engine — Opportunity Validation Bundle</p>
-        <button
-          onClick={onDemo}
-          disabled={disabled}
-          className="mt-3 px-4 py-1.5 text-xs font-medium rounded border border-amber-500/30 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 hover:text-amber-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Demo — Samsung LEO Satellite Case
-        </button>
+        <div className="mt-3 flex items-center justify-center gap-3">
+          <button
+            onClick={handlePreload}
+            disabled={disabled}
+            className="px-4 py-1.5 text-xs font-medium rounded border border-cyan-500/30 bg-cyan-500/10 text-cyan-300 hover:bg-cyan-500/20 hover:text-cyan-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            PreLoad — Samsung LEO Case Inputs
+          </button>
+          <button
+            onClick={onDemo}
+            disabled={disabled}
+            className="px-4 py-1.5 text-xs font-medium rounded border border-amber-500/30 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 hover:text-amber-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Demo — Samsung LEO Satellite Case
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
