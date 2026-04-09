@@ -5,12 +5,13 @@ export const STEPS = [
   { id: '1a', label: 'Demand Val × Market Research', model: 'Opus 4.6', group: 1 },
   { id: '1b', label: 'Demand Val × Competitor Analysis', model: 'Opus 4.6', group: 1 },
   { id: '1c', label: 'Market Research × Competitor Analysis', model: 'Opus 4.6', group: 1 },
-  { id: '2a', label: 'Bull Thesis', model: 'Opus 4.6', group: 2 },
-  { id: '2b', label: 'Bear Attack', model: 'Gemini 3.1', group: 2 },
-  { id: '2c', label: 'Bull Rebuttal', model: 'Opus 4.6', group: 2 },
-  { id: '2d', label: 'Synthesizer', model: 'Opus 4.6', group: 2 },
-  { id: '2e', label: 'Creative Alternative', model: 'Gemini 3.1', group: 2 },
-  { id: '3a', label: 'Final Assembly', model: 'Opus 4.6', group: 3 },
+  { id: '1.5a', label: 'Path Cartographer', model: 'Opus 4.6', group: 2 },
+  { id: '2a', label: 'Bull Thesis', model: 'Opus 4.6', group: 3 },
+  { id: '2b', label: 'Bear Attack', model: 'Gemini 3.1', group: 3 },
+  { id: '2c', label: 'Bull Rebuttal', model: 'Opus 4.6', group: 3 },
+  { id: '2d', label: 'Synthesizer', model: 'Opus 4.6', group: 3 },
+  { id: '2e', label: 'Creative Alternative', model: 'Gemini 3.1', group: 3 },
+  { id: '3a', label: 'Final Assembly', model: 'Opus 4.6', group: 4 },
 ]
 
 export async function runPipeline(demval, marketResearch, competitorAnalysis, userContext, onStep) {
@@ -47,6 +48,19 @@ export async function runPipeline(demval, marketResearch, competitorAnalysis, us
   }
 
   const tensions = { tension_dm, tension_dc, tension_mc }
+
+  // ── STEP 1.5: Path Cartographer (sequential, blocking) ──
+  emit('1.5a', 'running')
+  let cartographerOutput
+  try {
+    cartographerOutput = await callAgent('cartographer', {
+      demval, marketResearch, competitorAnalysis, tensions, userContext,
+    })
+    emit('1.5a', 'complete', cartographerOutput)
+  } catch (e) {
+    emit('1.5a', 'error', null, e.message)
+    throw new Error(`Step 1.5 failed: ${e.message}`)
+  }
 
   // ── STEP 2a: Bull Thesis (sequential) ──
   emit('2a', 'running')

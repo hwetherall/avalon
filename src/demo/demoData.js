@@ -4,6 +4,7 @@ import marketResearchRaw from '../../examples/avv-mr.md?raw'
 import competitorAnalysisRaw from '../../examples/avv-ca.md?raw'
 
 // Step outputs
+import cartographer from './outputs/1.5a.md?raw'
 import tension1a from './outputs/1a.md?raw'
 import tension1b from './outputs/1b.md?raw'
 import tension1c from './outputs/1c.md?raw'
@@ -101,6 +102,7 @@ export const DEMO_STEP_OUTPUTS = {
   '1a': tension1a,
   '1b': tension1b,
   '1c': tension1c,
+  '1.5a': cartographer,
   '2a': bull,
   '2b': bear,
   '2c': rebuttal,

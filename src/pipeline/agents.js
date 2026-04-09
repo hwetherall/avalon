@@ -18,6 +18,12 @@ export const AGENT_META = {
     model: 'Claude Opus 4.6',
     description: 'Comparing Market Research and Competitor Analysis for alignment, tension, and implications.',
   },
+  '1.5a': {
+    name: 'Path Cartographer',
+    role: 'Strategic scenario planner',
+    model: 'Claude Opus 4.6',
+    description: 'Enumerating 5\u20136 distinct strategic paths from the upstream evidence before evaluation begins.',
+  },
   '2a': {
     name: 'Bull Thesis',
     role: 'Senior investment strategist',
