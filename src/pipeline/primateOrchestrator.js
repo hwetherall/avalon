@@ -12,13 +12,13 @@ import { synthesizeTrack, assessKillSignals } from './primate/synthesizer.js'
 
 export const PRIMATE_STEPS = [
   { id: 'pr-plan', label: 'Smart Planner', model: 'Opus 4.6', group: 10 },
-  { id: 'pr-t1', label: 'T1: Tech State-of-the-Art', model: 'gpt-4.1 + Tavily', group: 11 },
-  { id: 'pr-t2', label: 'T2: Reference Architecture', model: 'gpt-4.1 + Tavily', group: 11 },
-  { id: 'pr-t3', label: 'T3: Component & Dependency', model: 'gpt-4.1 + Tavily', group: 11 },
-  { id: 'pr-t4', label: 'T4: Regulatory & Standards', model: 'gpt-4.1 + Tavily', group: 11 },
-  { id: 'pr-t5', label: 'T5: Patent & IP Landscape', model: 'gpt-4.1 + Tavily', group: 11 },
-  { id: 'pr-t6', label: 'T6: Talent & Capability', model: 'gpt-4.1 + Tavily', group: 11 },
-  { id: 'pr-synth', label: 'Evidence Synthesis', model: 'gpt-4.1', group: 12 },
+  { id: 'pr-t1', label: 'T1: Tech State-of-the-Art', model: 'gpt-5.4 + Tavily', group: 11 },
+  { id: 'pr-t2', label: 'T2: Reference Architecture', model: 'gpt-5.4 + Tavily', group: 11 },
+  { id: 'pr-t3', label: 'T3: Component & Dependency', model: 'gpt-5.4 + Tavily', group: 11 },
+  { id: 'pr-t4', label: 'T4: Regulatory & Standards', model: 'gpt-5.4 + Tavily', group: 11 },
+  { id: 'pr-t5', label: 'T5: Patent & IP Landscape', model: 'gpt-5.4 + Tavily', group: 11 },
+  { id: 'pr-t6', label: 'T6: Talent & Capability', model: 'gpt-5.4 + Tavily', group: 11 },
+  { id: 'pr-synth', label: 'Evidence Synthesis', model: 'gpt-5.4', group: 12 },
   { id: 'pr-kill', label: 'Kill Signal Assessment', model: 'Opus 4.6', group: 13 },
 ]
 
