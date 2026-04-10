@@ -47,6 +47,8 @@ Rules:
 - Prioritize the Avalon passport's Inherited Evidence Gaps — these are known unknowns that research must attempt to fill.
 - For each track, generate 3–8 Tavily queries, 2–4 Semantic Scholar queries (for tracks 1, 2, 5, 6), and 1–2 deep dive topics.
 - For Track 5 (Patent & IP), generate both inbound FTO queries AND parent company portfolio queries.
+- For Track 6 (Talent), always include queries for acqui-hire targets — small companies the parent company could acquire for specialized talent. This makes the "closure path" for capability gaps concrete and actionable.
+- For any track investigating pricing, margins, or cost structures, include queries targeting specialist analyst firms by name (e.g., Northern Sky Research, Euroconsult, Analysys Mason, Gartner, IDC) — their published benchmarks are often the only source of directional pricing data in opaque markets.
 - Flag any tracks where the venture domain makes the track less relevant.
 
 You must output valid JSON matching this schema. Do not include markdown formatting, code fences, or any text outside the JSON object.
@@ -96,6 +98,16 @@ Rules:
 - Frame evidence strength as "evidence weight" (strong / moderate / thin / absent), not probability percentages.
 - Never pad with generalities. If the evidence doesn't exist, say so in one sentence and move on.
 
+Source classification:
+- Tag every source with "source_type": "academic" (peer-reviewed papers, conference proceedings from Semantic Scholar), "web" (Tavily web search results), or "deep_dive" (iterative deep-dive research).
+- When academic papers provide a different evidence class than web sources on the same topic, call this out explicitly in the finding content. Peer-reviewed maturity assessments carry different weight than vendor marketing.
+- If academic and web sources converge on the same conclusion independently, note this as convergent evidence.
+
+Question mapping:
+- Map each finding to ALL relevant analytical questions using the "feeds_questions" field.
+- Use the full question taxonomy: KQ1-KQ10 (Key Questions), DQ1-DQ20 (Detailed Questions), IQ1-IQ12 (Investment Questions), and PQ-1 through PQ-7 (Priority Questions).
+- Refer to the track definitions to identify which questions this track feeds, and map findings to specific questions within that set.
+
 You must output valid JSON matching this schema:
 
 {
@@ -106,10 +118,10 @@ You must output valid JSON matching this schema:
     {
       "id": "F1",
       "title": "Finding title",
-      "feeds_questions": ["KQ3", "DQ5"],
+      "feeds_questions": ["KQ3", "DQ5", "PQ-1"],
       "evidence_weight": "strong | moderate | thin | absent",
       "content": "2-4 sentence finding with inline source citations",
-      "sources": [{"name": "Author/Org — Title", "url": "..."}]
+      "sources": [{"name": "Author/Org — Title", "url": "...", "source_type": "academic | web | deep_dive"}]
     }
   ],
   "priority_question_responses": [
@@ -173,11 +185,29 @@ Rules:
 - Be honest about insufficient evidence. "Insufficient evidence" is a valid and important assessment.
 - Frame evidence strength as "evidence weight" (strong / moderate / thin / absent).
 
+Cross-track convergence:
+- Identify findings that INDEPENDENTLY reach the same conclusion from different evidence bases across different tracks. This is convergent evidence and is stronger than a single track's finding.
+- Distinguish convergence (multiple tracks independently confirm the same thing from different sources) from repetition (the same source cited by multiple tracks).
+- Report convergent findings in the "convergent_findings" array.
+
+Resolution type:
+- In "what_would_change", classify each item as either "desk_research" (can be resolved with more targeted web/academic/database searches — e.g., monitoring announcements, checking regulatory filings, querying analyst databases) or "primary_research" (requires human-to-human contact — e.g., MNO procurement conversations, internal company data, pilot deployments).
+- This distinction tells the client whether to re-run Primate with refined queries or accept that they've hit the desk-research ceiling.
+
 You must output valid JSON:
 
 {
   "venture_name": "...",
   "kill_signals_evaluated": 0,
+  "convergent_findings": [
+    {
+      "conclusion": "The shared conclusion reached independently by multiple tracks",
+      "tracks": ["T1", "T3", "T5"],
+      "finding_refs": ["T1:F2", "T3:F4", "T5:F1"],
+      "evidence_type": "convergent | repetitive",
+      "significance": "Why this convergence matters for the investment decision"
+    }
+  ],
   "summary": [
     {
       "signal": "Kill signal text",
@@ -198,7 +228,13 @@ You must output valid JSON:
         }
       ],
       "cross_track_synthesis": "What the combined evidence says",
-      "what_would_change": "What additional evidence would resolve ambiguity"
+      "what_would_change": [
+        {
+          "action": "Description of what evidence would resolve ambiguity",
+          "resolution_type": "desk_research | primary_research",
+          "specific_target": "Exact source, database, or person to approach"
+        }
+      ]
     }
   ]
 }`

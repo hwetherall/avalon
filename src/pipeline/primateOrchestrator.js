@@ -6,7 +6,7 @@
 
 import { runSmartPlanner } from './primate/planner.js'
 import { runTrack } from './primate/trackRunner.js'
-import { synthesizeTrack, assessKillSignals } from './primate/synthesizer.js'
+import { synthesizeTrack, assessKillSignals, buildQuestionMapping } from './primate/synthesizer.js'
 
 // ── Step definitions for UI rendering ──
 
@@ -169,9 +169,13 @@ export async function runPrimate({ passport, ventureBrief, onStep }) {
     }
   }
 
+  // ── Step 5: Build question mapping index ──
+  const questionMapping = buildQuestionMapping(trackSyntheses)
+
   return {
     plan,
     trackSyntheses,
     killSignalAssessment,
+    questionMapping,
   }
 }

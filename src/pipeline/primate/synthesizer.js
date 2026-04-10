@@ -70,6 +70,65 @@ export async function assessKillSignals(trackSyntheses, passport, { signal } = {
   return extractJSON(raw)
 }
 
+/**
+ * Build a mapping index from KQ/DQ/IQ/PQ questions to the findings that feed them.
+ * This is the critical connector between Primate's track-level findings and
+ * the downstream MAAP pipeline's 42 analytical questions.
+ *
+ * @param {Array<object>} trackSyntheses - All 6 synthesized evidence packages
+ * @returns {object} { questionIndex, unmappedFindings }
+ */
+export function buildQuestionMapping(trackSyntheses) {
+  const index = {} // { "KQ3": [{ track_id, finding_id, title, evidence_weight, source_types }] }
+  const unmapped = []
+
+  for (const track of trackSyntheses) {
+    for (const finding of (track.findings || [])) {
+      const questions = finding.feeds_questions || []
+      if (questions.length === 0) {
+        unmapped.push({
+          track_id: track.track_id,
+          finding_id: finding.id,
+          title: finding.title,
+        })
+        continue
+      }
+
+      const sourceTypes = [...new Set((finding.sources || []).map(s => s.source_type).filter(Boolean))]
+
+      for (const q of questions) {
+        if (!index[q]) index[q] = []
+        index[q].push({
+          track_id: track.track_id,
+          finding_id: finding.id,
+          title: finding.title,
+          evidence_weight: finding.evidence_weight,
+          source_types: sourceTypes.length > 0 ? sourceTypes : ['web'],
+        })
+      }
+    }
+  }
+
+  // Sort question keys: KQ first, then DQ, then IQ, then PQ
+  const sortKey = (q) => {
+    const m = q.match(/^(KQ|DQ|IQ|PQ)-?(\d+)/)
+    if (!m) return [4, 0, q]
+    const typeOrder = { KQ: 0, DQ: 1, IQ: 2, PQ: 3 }
+    return [typeOrder[m[1]] ?? 4, parseInt(m[2], 10)]
+  }
+
+  const sortedIndex = {}
+  for (const key of Object.keys(index).sort((a, b) => {
+    const [aType, aNum] = sortKey(a)
+    const [bType, bNum] = sortKey(b)
+    return aType - bType || aNum - bNum
+  })) {
+    sortedIndex[key] = index[key]
+  }
+
+  return { questionIndex: sortedIndex, unmappedFindings: unmapped }
+}
+
 // ── LLM helper ──
 
 async function callSynthesisLLM(model, systemPrompt, userPrompt, signal) {
