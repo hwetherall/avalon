@@ -122,4 +122,60 @@ export const AGENT_META = {
     model: 'Claude Opus 4.6',
     description: 'Evaluating kill signals against combined evidence from all tracks.',
   },
+
+  // ── Cellary (Wine & Private-Club Decision Dossier) ──
+  'ce-plan': {
+    name: 'Smart Vintner',
+    role: 'Wine-domain research planner',
+    model: 'Claude Opus 4.6',
+    description: 'Generating per-track research plans tuned to wine-industry validation and decision questions.',
+  },
+  'ce-t1': {
+    name: 'CT1: Market Sizing',
+    role: 'Market sizing researcher',
+    model: 'gpt-5.4 + Tavily + S2',
+    description: 'Quantifying the universe of US private clubs, cellar sizes, and membership profiles.',
+  },
+  'ce-t2': {
+    name: 'CT2: Client Pain & Behavior',
+    role: 'Customer-pain researcher',
+    model: 'gpt-5.4 + Tavily + S2',
+    description: 'Mapping large-cellar pain points, consignment models, and member-exchange practices.',
+  },
+  'ce-t3': {
+    name: 'CT3: Pricing & WTP',
+    role: 'Pricing researcher',
+    model: 'gpt-5.4 + Tavily',
+    description: 'Benchmarking club/hospitality SaaS pricing and willingness-to-pay envelopes.',
+  },
+  'ce-t4': {
+    name: 'CT4: Adjacent Markets',
+    role: 'Expansion researcher',
+    model: 'gpt-5.4 + Tavily + S2',
+    description: 'Sizing hotels/resorts/wine-storage as adjacent markets and the club-to-HNW funnel.',
+  },
+  'ce-t5': {
+    name: 'CT5: Ops & Unit Economics',
+    role: 'Unit-economics researcher',
+    model: 'gpt-5.4 + Tavily',
+    description: 'Evaluating $1M-budget feasibility, critical hires, and time-to-breakeven.',
+  },
+  'ce-t6': {
+    name: 'CT6: Tech & Competitors',
+    role: 'Competitive-landscape researcher',
+    model: 'gpt-5.4 + Tavily',
+    description: 'Profiling Binwise, Uncorkd, Preferabli, SevenFifty, CellarTracker and their moats.',
+  },
+  'ce-synth': {
+    name: 'Evidence Synthesis',
+    role: 'Per-track evidence packager',
+    model: 'gpt-5.4',
+    description: 'Synthesizing raw research into per-track evidence packages with VQ/DQ responses.',
+  },
+  'ce-doss': {
+    name: 'Dossier Assembly',
+    role: 'FactBank + Decision Memo assembler',
+    model: 'Claude Sonnet 4.6',
+    description: 'Consolidating tracks into a cited FactBank and an auditable Decision Memo.',
+  },
 }

@@ -156,7 +156,7 @@ export async function runAllScouts(cartographerOutput, ventureName, onScoutUpdat
     status: result.field_report ? 'complete' : 'error',
     fieldReport: result.field_report || null,
     queriesRun: result.queries_run || 0,
-    error: result.error || null,
+    error: result.error || (result.field_report ? null : 'Scout did not produce a field report.'),
   }))
 
   const successCount = results.filter(r => r.fieldReport !== null).length

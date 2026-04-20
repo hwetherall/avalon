@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 
 const DIMENSION_LABELS = {
   evidence_strength: 'Evidence',
@@ -15,6 +15,16 @@ const RATING_COLORS = {
   'Insufficient Data': 'bg-gray-500',
 }
 
+// Map categorical War Table ratings → numeric 0-4 so paths can be plotted.
+// Strong = good on every dimension (per RATING_COLORS emerald = positive).
+const RATING_SCORE = {
+  'Strong': 4,
+  'Moderate': 2.5,
+  'Weak': 1,
+  'Insufficient Data': 0,
+}
+const scoreOf = (r) => RATING_SCORE[r] ?? 0
+
 function RatingDot({ rating }) {
   const color = RATING_COLORS[rating] || 'bg-gray-500'
   return (
@@ -29,6 +39,7 @@ export default function PathSelection({ warTableOutput, onSelect }) {
   const [selectedId, setSelectedId] = useState(null)
   const [overrideRationale, setOverrideRationale] = useState('')
   const [confirming, setConfirming] = useState(false)
+  const cardRefs = useRef({})
 
   if (!warTableOutput) return null
 
@@ -39,6 +50,17 @@ export default function PathSelection({ warTableOutput, onSelect }) {
   const handleConfirm = () => {
     if (!selectedId) return
     onSelect(selectedId, isOverride ? overrideRationale : null)
+  }
+
+  const handleDotClick = (pathId) => {
+    setSelectedId(pathId)
+    setConfirming(false)
+    const node = cardRefs.current[pathId]
+    if (node) {
+      node.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      node.classList.add('ring-2', 'ring-accent')
+      setTimeout(() => node.classList.remove('ring-2', 'ring-accent'), 1400)
+    }
   }
 
   return (
@@ -102,6 +124,16 @@ export default function PathSelection({ warTableOutput, onSelect }) {
         </div>
       )}
 
+      {/* Risk/Reward quadrant map */}
+      {(ranking || []).length > 0 && (
+        <PathQuadrant
+          paths={ranking}
+          selectedId={selectedId}
+          recommendedId={rec.recommended_path_id}
+          onDotClick={handleDotClick}
+        />
+      )}
+
       {/* Ranked path cards */}
       <div className="space-y-3">
         {(ranking || []).map(path => {
@@ -111,6 +143,7 @@ export default function PathSelection({ warTableOutput, onSelect }) {
           return (
             <div
               key={path.path_id}
+              ref={el => { if (el) cardRefs.current[path.path_id] = el }}
               className={`
                 bg-surface-800 border rounded-lg p-4 transition-all cursor-pointer
                 ${isSelected
@@ -251,4 +284,178 @@ export default function PathSelection({ warTableOutput, onSelect }) {
       )}
     </div>
   )
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// PathQuadrant — Reward (x) × inverted Risk (y) map with one dot per path.
+// Dots are plotted from War Table categorical ratings mapped to 0-4 scores.
+// Dot size encodes evidence_strength. Recommended and selected paths get
+// distinct strokes/fills so they stand out.
+// ══════════════════════════════════════════════════════════════════════════════
+function PathQuadrant({ paths, selectedId, recommendedId, onDotClick }) {
+  const width = 720
+  const height = 380
+  const pad = { left: 56, right: 28, top: 28, bottom: 44 }
+  const plotW = width - pad.left - pad.right
+  const plotH = height - pad.top - pad.bottom
+
+  // domain 0..4 (RATING_SCORE range)
+  const xScale = (v) => pad.left + (v / 4) * plotW
+  const yScale = (v) => pad.top + (1 - v / 4) * plotH
+
+  const quadrantLabelStyle = { fontSize: 10, fill: '#9ca3af', fontFamily: 'monospace' }
+  const axisTickStyle = { fontSize: 9, fill: '#6b7280', fontFamily: 'monospace' }
+
+  // Collision-aware jitter: identical (x,y) dots would overlap exactly. Detect
+  // duplicates and spread them in a small circle.
+  const placed = paths.map(p => ({
+    path: p,
+    rawX: scoreOf(p.dimensions?.reward_ceiling),
+    rawY: scoreOf(p.dimensions?.core_bet_risk),
+    rawEv: scoreOf(p.dimensions?.evidence_strength),
+  }))
+  const posKey = (p) => `${p.rawX}|${p.rawY}`
+  const buckets = {}
+  placed.forEach(p => {
+    const k = posKey(p)
+    ;(buckets[k] = buckets[k] || []).push(p)
+  })
+  Object.values(buckets).forEach(bucket => {
+    if (bucket.length === 1) {
+      bucket[0].x = xScale(bucket[0].rawX)
+      bucket[0].y = yScale(bucket[0].rawY)
+    } else {
+      bucket.forEach((p, i) => {
+        const angle = (i / bucket.length) * Math.PI * 2
+        const r = 14
+        p.x = xScale(p.rawX) + Math.cos(angle) * r
+        p.y = yScale(p.rawY) + Math.sin(angle) * r
+      })
+    }
+  })
+
+  const allInsufficient = placed.every(p => p.rawX === 0 && p.rawY === 0)
+
+  return (
+    <div className="bg-surface-800 border border-surface-600 rounded-lg p-4">
+      <div className="flex items-start justify-between mb-2">
+        <div>
+          <h3 className="text-sm font-semibold text-gray-200">Path Map</h3>
+          <p className="text-xs text-gray-500 mt-0.5">
+            Reward ceiling × inverted core-bet risk. Top-right is highest reward at lowest risk. Dot size = evidence strength. Click a dot to select.
+          </p>
+        </div>
+        {allInsufficient && (
+          <span className="text-[10px] px-2 py-1 rounded bg-amber-500/10 text-amber-300 border border-amber-500/30">
+            All paths have Insufficient Data — dots stacked at origin
+          </span>
+        )}
+      </div>
+
+      <div className="overflow-x-auto">
+        <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto" role="img" aria-label="Path risk-reward quadrant">
+          {/* Quadrant backgrounds (subtle) */}
+          <rect x={pad.left} y={pad.top} width={plotW / 2} height={plotH / 2} fill="#f59e0b" fillOpacity="0.04" />
+          <rect x={pad.left + plotW / 2} y={pad.top} width={plotW / 2} height={plotH / 2} fill="#10b981" fillOpacity="0.06" />
+          <rect x={pad.left} y={pad.top + plotH / 2} width={plotW / 2} height={plotH / 2} fill="#ef4444" fillOpacity="0.04" />
+          <rect x={pad.left + plotW / 2} y={pad.top + plotH / 2} width={plotW / 2} height={plotH / 2} fill="#6366f1" fillOpacity="0.04" />
+
+          {/* Grid */}
+          <line x1={pad.left} y1={pad.top + plotH / 2} x2={pad.left + plotW} y2={pad.top + plotH / 2} stroke="#374151" strokeDasharray="3 3" />
+          <line x1={pad.left + plotW / 2} y1={pad.top} x2={pad.left + plotW / 2} y2={pad.top + plotH} stroke="#374151" strokeDasharray="3 3" />
+
+          {/* Axes */}
+          <line x1={pad.left} y1={pad.top + plotH} x2={pad.left + plotW} y2={pad.top + plotH} stroke="#4b5563" />
+          <line x1={pad.left} y1={pad.top} x2={pad.left} y2={pad.top + plotH} stroke="#4b5563" />
+
+          {/* Quadrant labels */}
+          <text x={pad.left + plotW * 0.25} y={pad.top + plotH * 0.08} textAnchor="middle" style={quadrantLabelStyle}>
+            GRINDER
+          </text>
+          <text x={pad.left + plotW * 0.75} y={pad.top + plotH * 0.08} textAnchor="middle" style={quadrantLabelStyle} fill="#10b981">
+            LOW-HANGING FRUIT
+          </text>
+          <text x={pad.left + plotW * 0.25} y={pad.top + plotH * 0.96} textAnchor="middle" style={quadrantLabelStyle} fill="#ef4444">
+            AVOID
+          </text>
+          <text x={pad.left + plotW * 0.75} y={pad.top + plotH * 0.96} textAnchor="middle" style={quadrantLabelStyle}>
+            MOONSHOT
+          </text>
+
+          {/* Axis titles */}
+          <text x={pad.left + plotW / 2} y={height - 8} textAnchor="middle" style={{ ...axisTickStyle, fontSize: 11, fill: '#9ca3af' }}>
+            Reward Ceiling →
+          </text>
+          <text
+            x={-(pad.top + plotH / 2)} y={16}
+            transform="rotate(-90)"
+            textAnchor="middle"
+            style={{ ...axisTickStyle, fontSize: 11, fill: '#9ca3af' }}
+          >
+            ← Risk (safer up)
+          </text>
+
+          {/* Axis ticks */}
+          {['Weak', 'Moderate', 'Strong'].map((label, i) => {
+            const v = [1, 2.5, 4][i]
+            return (
+              <g key={`x-${label}`}>
+                <text x={xScale(v)} y={pad.top + plotH + 14} textAnchor="middle" style={axisTickStyle}>{label}</text>
+              </g>
+            )
+          })}
+          {['Weak', 'Moderate', 'Strong'].map((label, i) => {
+            const v = [1, 2.5, 4][i]
+            return (
+              <text key={`y-${label}`} x={pad.left - 6} y={yScale(v) + 3} textAnchor="end" style={axisTickStyle}>{label}</text>
+            )
+          })}
+
+          {/* Path dots */}
+          {placed.map(({ path, x, y, rawEv }) => {
+            const isRecommended = path.path_id === recommendedId
+            const isSelected = path.path_id === selectedId
+            const radius = 6 + rawEv * 2 // 6..14
+            const fill = isSelected ? '#f59e0b' : isRecommended ? 'rgba(16, 185, 129, 0.45)' : 'rgba(156, 163, 175, 0.5)'
+            const stroke = isSelected ? '#fbbf24' : isRecommended ? '#10b981' : '#9ca3af'
+            return (
+              <g key={path.path_id} style={{ cursor: 'pointer' }} onClick={() => onDotClick(path.path_id)}>
+                <circle cx={x} cy={y} r={radius} fill={fill} stroke={stroke} strokeWidth={isSelected ? 2.5 : 1.5} />
+                <text
+                  x={x} y={y - radius - 4}
+                  textAnchor="middle"
+                  style={{ fontSize: 10, fill: isSelected ? '#fde68a' : isRecommended ? '#a7f3d0' : '#d1d5db', fontFamily: 'monospace', fontWeight: 600 }}
+                >
+                  #{path.rank} {truncate(path.path_name, 22)}
+                </text>
+                <title>{`${path.path_name}\nReward: ${path.dimensions?.reward_ceiling}\nCore Bet: ${path.dimensions?.core_bet_risk}\nEvidence: ${path.dimensions?.evidence_strength}`}</title>
+              </g>
+            )
+          })}
+        </svg>
+      </div>
+
+      {/* Legend */}
+      <div className="flex flex-wrap items-center gap-4 mt-2 text-[10px] text-gray-400">
+        <div className="flex items-center gap-1.5">
+          <span className="inline-block w-3 h-3 rounded-full bg-emerald-500/40 border border-emerald-500" />
+          Innovera recommended
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="inline-block w-3 h-3 rounded-full bg-amber-500 border border-amber-300" />
+          Your selection
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="inline-block w-3 h-3 rounded-full bg-gray-400/50 border border-gray-400" />
+          Other
+        </div>
+        <div className="ml-auto italic text-gray-500">Dot size ∝ evidence strength</div>
+      </div>
+    </div>
+  )
+}
+
+function truncate(s, n) {
+  if (!s) return ''
+  return s.length > n ? s.slice(0, n - 1) + '…' : s
 }

@@ -4,11 +4,10 @@ import PipelineView from './components/PipelineView.jsx'
 import PassportView from './components/PassportView.jsx'
 import PathSelection from './components/PathSelection.jsx'
 import ScoutIncompleteGate from './components/ScoutIncompleteGate.jsx'
-import PrimateView from './components/PrimateView.jsx'
 import { runPreSelection, runPostSelection, STEPS, POST_SELECTION_STEPS } from './pipeline/orchestrator.js'
 import { runSingleScout } from './pipeline/scoutOrchestrator.js'
 import { runWarTable } from './pipeline/warTable.js'
-import { runPrimate, PRIMATE_STEPS } from './pipeline/primateOrchestrator.js'
+import { getMode } from './pipeline/modes/registry.js'
 // Demo data is lazy-loaded only when the user clicks Demo
 const loadDemoData = () => import('./demo/demoData.js')
 
@@ -19,8 +18,8 @@ const PHASES = {
   SELECTING: 'selecting',
   RUNNING_POST: 'running_post',
   COMPLETE: 'complete',
-  RUNNING_PRIMATE: 'running_primate',
-  PRIMATE_COMPLETE: 'primate_complete',
+  RUNNING_MODE: 'running_mode',
+  MODE_COMPLETE: 'mode_complete',
   ERROR: 'error',
 }
 
@@ -40,9 +39,10 @@ export default function App() {
   const scoutGateRef = useRef(null)
   const [rerunningScoutPathId, setRerunningScoutPathId] = useState(null)
 
-  // Primate (P&T deep research) state
-  const [primateStepStates, setPrimateStepStates] = useState({})
-  const [primateResults, setPrimateResults] = useState(null)
+  // Selected post-passport mode (Primate, Cellary, …) — driven by the mode registry.
+  const [selectedModeId, setSelectedModeId] = useState(null)
+  const [modeStepStates, setModeStepStates] = useState({})
+  const [modeResults, setModeResults] = useState(null)
 
   const updateStep = useCallback((stepId, update) => {
     if (update.status === 'running') {
@@ -178,8 +178,9 @@ export default function App() {
     setPipelineError(null)
     setIsDemo(false)
     setRerunningScoutPathId(null)
-    setPrimateStepStates({})
-    setPrimateResults(null)
+    setSelectedModeId(null)
+    setModeStepStates({})
+    setModeResults(null)
     startTimesRef.current = {}
     preSelectionRef.current = null
     scoutContextRef.current = null
@@ -264,12 +265,12 @@ export default function App() {
     }
   }, [getScoutRerunContext, updateStep, phase])
 
-  // ── Primate step updater ──
-  const updatePrimateStep = useCallback((stepId, update) => {
+  // ── Generic mode step updater ──
+  const updateModeStep = useCallback((stepId, update) => {
     if (update.status === 'running') {
       startTimesRef.current[stepId] = startTimesRef.current[stepId] || Date.now()
     }
-    setPrimateStepStates(prev => ({
+    setModeStepStates(prev => ({
       ...prev,
       [stepId]: {
         ...(prev[stepId] || {}),
@@ -279,34 +280,41 @@ export default function App() {
     }))
   }, [])
 
-  // ── Launch Primate (P&T Deep Research) ──
-  const handleLaunchPrimate = useCallback(async () => {
-    setPhase(PHASES.RUNNING_PRIMATE)
+  // ── Launch any post-passport mode (Primate, Cellary, …) via the registry ──
+  const handleLaunchMode = useCallback(async (modeId) => {
+    const mode = getMode(modeId)
+    if (!mode) return
+
+    setSelectedModeId(modeId)
+    setPhase(PHASES.RUNNING_MODE)
     setPipelineError(null)
-    setPrimateResults(null)
+    setModeResults(null)
 
     const initial = {}
-    for (const step of PRIMATE_STEPS) {
+    for (const step of mode.steps) {
       initial[step.id] = { status: 'waiting', output: null, error: null }
     }
-    initial['pr-plan'] = { status: 'running', output: null, error: null }
-    setPrimateStepStates(initial)
+    // Mark the first step as running eagerly so the UI renders progress immediately.
+    if (mode.steps[0]) {
+      initial[mode.steps[0].id] = { status: 'running', output: null, error: null }
+    }
+    setModeStepStates(initial)
 
     try {
-      const result = await runPrimate({
+      const result = await mode.orchestrator({
         passport,
         ventureBrief: preSelectionRef.current?.userContext || '',
-        onStep: updatePrimateStep,
+        onStep: updateModeStep,
       })
-      setPrimateResults(result)
-      setPhase(PHASES.PRIMATE_COMPLETE)
+      setModeResults(result)
+      setPhase(PHASES.MODE_COMPLETE)
     } catch (err) {
       setPipelineError(err.message)
       setPhase(PHASES.ERROR)
     }
-  }, [passport, updatePrimateStep])
+  }, [passport, updateModeStep])
 
-  // ── Return to passport from Primate ──
+  // ── Return to passport from a running/completed mode ──
   const handleBackToPassport = useCallback(() => {
     setPhase(PHASES.COMPLETE)
   }, [])
@@ -402,29 +410,30 @@ export default function App() {
               <PassportView
                 passport={passport}
                 onReset={handleReset}
-                onLaunchPrimate={isDemo ? undefined : handleLaunchPrimate}
+                onLaunchMode={isDemo ? undefined : handleLaunchMode}
               />
             </div>
           </div>
         )}
 
-        {/* Primate Running Phase */}
-        {phase === PHASES.RUNNING_PRIMATE && (
-          <PrimateView
-            stepStates={primateStepStates}
-            primateResults={null}
-            onReset={handleBackToPassport}
-          />
-        )}
-
-        {/* Primate Complete Phase */}
-        {phase === PHASES.PRIMATE_COMPLETE && primateResults && (
-          <PrimateView
-            stepStates={primateStepStates}
-            primateResults={primateResults}
-            onReset={handleBackToPassport}
-          />
-        )}
+        {/* Mode Running / Complete — generic dispatch through the mode registry */}
+        {(phase === PHASES.RUNNING_MODE || phase === PHASES.MODE_COMPLETE) && selectedModeId && (() => {
+          const mode = getMode(selectedModeId)
+          if (!mode) return null
+          const ModeView = mode.view
+          const resultsToPass = phase === PHASES.MODE_COMPLETE ? modeResults : null
+          // PrimateView expects `primateResults`; CellaryView expects `cellaryResults`.
+          // Pass both aliases so the registry doesn't need to know each view's prop name.
+          return (
+            <ModeView
+              stepStates={modeStepStates}
+              primateResults={resultsToPass}
+              cellaryResults={resultsToPass}
+              results={resultsToPass}
+              onReset={handleBackToPassport}
+            />
+          )
+        })()}
       </div>
     </div>
   )

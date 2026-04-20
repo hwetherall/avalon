@@ -348,11 +348,13 @@ You have access to:
 5. Strategic Context from the client intake (if provided)
 
 V2 ASSEMBLY RULES:
-- The passport must follow the V2 schema (Sections 1–10). Sections 1–7 and 10 are structurally identical to V1. Sections 8 and 9 are new/modified.
+- The passport must follow the V2 schema (Section 0, then Sections 1–10, with Section 7.5 between 7 and 8). Sections 1–7 and 10 are structurally identical to V1. Section 0 (Argument Summary) and Section 7.5 (Confidence Ledger) are new in this pass. Sections 8 and 9 are V2 additions from prior passes.
+- Section 0 (Argument Summary) MUST be an argument, not a summary. Use EXACTLY this internal structure with bolded headers: **Thesis** (1 sentence stating the verdict and why), **Strongest evidence for** (3 bullets, each carrying an inline markdown citation [source](url) sourced from the scout field report), **Strongest counter** (2 bullets, also cited where possible), **Resolution** (2–3 sentences explaining why the evidence for wins despite the counter — or why it doesn't), **What would change our mind** (2 falsifiable conditions, each with a specific numeric or event-based threshold, e.g. "If >40% of target clubs report ..."). This section is what a reader who only has 60 seconds will read; it must carry the whole argument.
+- Section 7.5 (Confidence Ledger) is a markdown table with three columns: Claim | Confidence (H/M/L) | Top flip-condition. Include the 5–8 most load-bearing claims from the passport (verdict, headline numbers, key constraints, key risks). The "Top flip-condition" is the single piece of new evidence that would most cleanly upgrade or downgrade the confidence level.
 - Section 8 (Path Context) is YOUR unique contribution. The Synthesizer did not produce this. Build it from the War Table output and Cartographer data.
 - Section 9 (Strategic Alternative) contains the #2 ranked path from the War Table, not a Creative agent's output.
 - Section 10 (Downstream Brief: P&T) must incorporate specific scout findings that are relevant to P&T research scope. If the scout found concrete data points (pricing, technical specs, regulatory requirements, patent information), these should flow into the P&T brief as "preliminary evidence" with source URLs.
-- Scout evidence with URLs should be cited in the passport. Downstream teams should be able to follow these sources.
+- Scout evidence with URLs should be cited in the passport. Downstream teams should be able to follow these sources. In particular, every factual claim in Section 0 that is not common knowledge MUST carry an inline markdown citation [source](url) from the scout field report.
 
 CRITICAL V1 COMPATIBILITY:
 - Primate consumes Sections 2, 3, and 10 (renamed from Section 9 in V1). The field names and structure of these sections MUST match V1's schema exactly: Scope Directive, Context Package, Constraint Set, Priority Questions, Inherited Evidence Gaps, Kill Signal Translation.
@@ -807,6 +809,25 @@ Produce the V2 Information Passport using EXACTLY this structure:
 - **Path evaluation:** {N} paths identified, scouted, and ranked. Decision-maker selected: {path_name}.
 - **Pipeline version:** Avalon V2 (multi-path)
 
+## 0. Argument Summary
+
+**Thesis:** [One sentence stating the verdict and the single load-bearing reason behind it.]
+
+**Strongest evidence for:**
+- [Cited claim with inline [source](url) from the scout field report.]
+- [Cited claim with inline [source](url).]
+- [Cited claim with inline [source](url).]
+
+**Strongest counter:**
+- [The sharpest objection to the thesis, cited where possible.]
+- [Second-sharpest objection, cited where possible.]
+
+**Resolution:** [2–3 sentences explaining why the evidence for wins despite the counter — or, if the counter wins, why the verdict is nevertheless what it is. Do NOT hand-wave. Name the specific reasoning that tips the balance.]
+
+**What would change our mind:**
+- [Falsifiable condition #1 with a specific numeric or event-based threshold, e.g. "If <20 NorCal clubs pilot at $15k ACV within 6 months."]
+- [Falsifiable condition #2 with a specific threshold.]
+
 ## 1. Opportunity Verdict
 **Verdict:** [Pursue / Pursue with conditions / Pivot recommended / Do not pursue]
 
@@ -834,6 +855,17 @@ Produce the V2 Information Passport using EXACTLY this structure:
 
 ## 7. Kill Signals
 [Numbered with IDs: KS-1, KS-2, ... Include any kill conditions surfaced by scout evidence.]
+
+## 7.5. Confidence Ledger
+
+The 5–8 most load-bearing claims in this passport, each with a confidence level and the single piece of new evidence that would most cleanly upgrade or downgrade that confidence.
+
+| Claim | Confidence | Top flip-condition |
+|---|---|---|
+| [Verdict or headline claim #1] | [High/Medium/Low] | [Specific new evidence that would flip this] |
+| [Claim #2] | [H/M/L] | [Flip condition] |
+| [Claim #3] | [H/M/L] | [Flip condition] |
+| [...continue for 5–8 rows total...] |  |  |
 
 ## 8. Path Context
 ### Evaluation Method

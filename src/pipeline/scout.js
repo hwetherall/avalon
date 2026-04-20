@@ -262,15 +262,28 @@ export async function runScout(pathBrief, { signal, onPhase } = {}) {
     notify('synthesizing', { message: 'Synthesizing with expanded evidence...', queriesRun: queries.length + followUpQueries.length })
     const finalReport = await synthesize(pathBrief, [...initialResults, ...followUpResults], signal)
 
+    if (!finalReport.field_report) {
+      throw new Error('Deep-dive synthesis returned no field_report')
+    }
+
     return {
-      field_report: finalReport.field_report || null,
+      field_report: finalReport.field_report,
       queries_run: queries.length + followUpQueries.length,
       deep_dive_triggered: true,
     }
   }
 
+  if (firstPass.deep_dive_needed) {
+    // LLM asked for a deep dive but gave no follow-up queries — can't proceed.
+    throw new Error('Synthesis requested deep dive but returned no follow_up_queries')
+  }
+
+  if (!firstPass.field_report) {
+    throw new Error('Synthesis returned no field_report')
+  }
+
   return {
-    field_report: firstPass.field_report || null,
+    field_report: firstPass.field_report,
     queries_run: queries.length,
     deep_dive_triggered: false,
   }

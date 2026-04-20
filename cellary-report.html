@@ -1,0 +1,1742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CellarEye — Avalon × Cellary Decision Dossier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange:        #EC5A3F;
+    --orange-dark:   #D94E33;
+    --orange-soft:   #FDF2EE;
+    --orange-tint:   #FEF9F6;
+    --ink:           #18181B;
+    --ink-2:         #3F3F46;
+    --muted:         #71717A;
+    --muted-2:       #A1A1AA;
+    --line:          #E4E4E7;
+    --line-strong:   #D4D4D8;
+    --bg:            #FFFFFF;
+    --bg-soft:       #FAFAF9;
+    --green:         #059669;
+    --green-soft:    #ECFDF5;
+    --amber:         #D97706;
+    --amber-soft:    #FFFBEB;
+    --red:           #DC2626;
+    --red-soft:      #FEF2F2;
+    --blue:          #2563EB;
+    --blue-soft:     #EFF6FF;
+    --max:           1200px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--ink);
+    background: var(--bg);
+    font-feature-settings: 'ss01', 'cv11';
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* ── NAV ───────────────────────────────────────────────────── */
+  .nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: saturate(180%) blur(8px);
+    -webkit-backdrop-filter: saturate(180%) blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner {
+    max-width: var(--max); margin: 0 auto;
+    padding: 18px 32px;
+    display: flex; align-items: center; gap: 32px;
+  }
+  .brand { display: flex; align-items: center; gap: 14px; margin-right: auto; }
+  .brand .mark {
+    width: 44px; height: 44px;
+    background: var(--orange);
+    display: inline-flex; align-items: center; justify-content: center;
+    color: white; font-weight: 800; font-size: 22px; line-height: 1;
+    clip-path: polygon(50% 15%, 95% 85%, 5% 85%);
+    letter-spacing: 0;
+  }
+  .brand .mark-box {
+    width: 44px; height: 44px;
+    background: var(--orange);
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .brand .mark-box svg { display: block; }
+  .brand .wordmark {
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    font-size: 18px;
+    color: var(--ink);
+  }
+  .brand .wordmark .dot { color: var(--orange); }
+  .section-nav { display: flex; gap: 32px; }
+  .section-nav a {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    color: var(--ink-2);
+    padding: 6px 0;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s ease;
+  }
+  .section-nav a:hover { color: var(--orange); border-bottom-color: var(--orange); }
+  .cta-outline {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 20px;
+    border: 1.5px solid var(--orange);
+    color: var(--orange);
+    border-radius: 999px;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.18em;
+    transition: all 0.15s ease;
+  }
+  .cta-outline:hover { background: var(--orange); color: white; }
+
+  /* ── HERO ──────────────────────────────────────────────────── */
+  .hero {
+    max-width: var(--max); margin: 0 auto;
+    padding: 90px 32px 64px;
+    position: relative;
+  }
+  .hero-meta {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.26em;
+    color: var(--muted); margin-bottom: 28px; text-transform: uppercase;
+  }
+  .hero-meta .sep { color: var(--line-strong); margin: 0 12px; }
+  .hero h1 {
+    font-size: clamp(2.25rem, 5.5vw, 4.5rem);
+    font-weight: 400;
+    line-height: 1.04;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+    max-width: 1100px;
+  }
+  .hero h1 .accent { color: var(--orange); font-weight: 400; }
+  .hero h1 .en { font-style: normal; }
+  .verdict-band {
+    margin-top: 36px;
+    display: flex; flex-wrap: wrap; gap: 12px;
+  }
+  .chip {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.06em;
+  }
+  .chip-orange { background: var(--orange); color: white; }
+  .chip-soft   { background: var(--orange-soft); color: var(--orange-dark); border: 1px solid rgba(236,90,63,0.2); }
+  .chip-ink    { background: var(--ink); color: white; }
+  .chip-line   { background: white; color: var(--ink-2); border: 1px solid var(--line-strong); }
+  .chip-dot::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: currentColor;
+  }
+  .hero-lead {
+    max-width: 920px;
+    margin-top: 48px;
+    font-size: 18px;
+    line-height: 1.65;
+    color: var(--ink-2);
+    padding-left: 20px;
+    border-left: 3px solid var(--orange);
+  }
+
+  /* ── SECTIONS ──────────────────────────────────────────────── */
+  .section {
+    max-width: var(--max); margin: 0 auto;
+    padding: 72px 32px;
+    border-top: 1px solid var(--line);
+  }
+  .section-head {
+    display: flex; align-items: baseline; gap: 24px; flex-wrap: wrap;
+    margin-bottom: 40px;
+  }
+  .section-kicker {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.28em;
+    color: var(--orange); text-transform: uppercase;
+  }
+  .section-title {
+    font-size: clamp(1.75rem, 3.2vw, 2.5rem);
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+    line-height: 1.15;
+  }
+  .section-desc {
+    font-size: 15px;
+    color: var(--muted);
+    max-width: 780px;
+    margin-top: 8px;
+  }
+
+  /* ── ARGUMENT SUMMARY ──────────────────────────────────────── */
+  .arg-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .arg-thesis {
+    padding: 28px 32px;
+    background: var(--orange-tint);
+    border-left: 4px solid var(--orange);
+    border-radius: 0 8px 8px 0;
+  }
+  .arg-thesis .label {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.22em;
+    color: var(--orange-dark); text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .arg-thesis p { font-size: 17px; line-height: 1.6; color: var(--ink); font-weight: 500; }
+  .arg-two {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  @media (max-width: 860px) { .arg-two { grid-template-columns: 1fr; } }
+  .arg-col {
+    padding: 24px 28px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--bg);
+  }
+  .arg-col h4 {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.22em;
+    color: var(--ink); text-transform: uppercase;
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .arg-col h4::before {
+    content: ''; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--green);
+  }
+  .arg-col.counter h4::before { background: var(--red); }
+  .arg-col ul { list-style: none; padding: 0; }
+  .arg-col li {
+    position: relative;
+    padding: 10px 0 10px 22px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ink-2);
+    border-bottom: 1px solid var(--line);
+  }
+  .arg-col li:last-child { border-bottom: none; }
+  .arg-col li::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 18px;
+    width: 10px; height: 1px;
+    background: var(--muted-2);
+  }
+  .arg-col a { color: var(--orange); border-bottom: 1px solid rgba(236,90,63,0.3); }
+  .arg-col a:hover { border-bottom-color: var(--orange); }
+  .arg-resolve {
+    padding: 28px 32px;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+  }
+  .arg-resolve h4 {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.22em;
+    color: var(--ink); text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .arg-resolve p { font-size: 15px; line-height: 1.7; color: var(--ink-2); }
+  .arg-flip {
+    padding: 24px 28px;
+    border: 1px dashed var(--orange);
+    border-radius: 8px;
+    background: white;
+  }
+  .arg-flip h4 {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.22em;
+    color: var(--orange-dark); text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .arg-flip ol { padding-left: 0; list-style: none; }
+  .arg-flip li {
+    position: relative;
+    padding: 8px 0 8px 28px;
+    counter-increment: flip;
+    font-size: 14px; color: var(--ink-2);
+    line-height: 1.6;
+  }
+  .arg-flip {counter-reset: flip;}
+  .arg-flip li::before {
+    content: counter(flip);
+    position: absolute;
+    left: 0; top: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; font-weight: 600;
+    color: var(--orange);
+    width: 20px; text-align: left;
+  }
+
+  /* ── THREE LEGS ────────────────────────────────────────────── */
+  .legs {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+  }
+  @media (max-width: 860px) { .legs { grid-template-columns: 1fr; } }
+  .leg {
+    padding: 28px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: white;
+    position: relative;
+    overflow: hidden;
+  }
+  .leg::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: var(--orange);
+  }
+  .leg .leg-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.22em;
+    color: var(--orange); text-transform: uppercase; margin-bottom: 10px;
+  }
+  .leg .leg-weight {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.18em;
+    color: var(--ink); text-transform: uppercase;
+    margin-top: 16px;
+    display: inline-block;
+    padding: 4px 10px;
+    background: var(--bg-soft);
+    border-radius: 999px;
+  }
+  .leg p { font-size: 14px; line-height: 1.65; color: var(--ink-2); }
+
+  /* ── FACTBANK ──────────────────────────────────────────────── */
+  .fact-filters {
+    display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap;
+    font-size: 12px; align-items: center;
+  }
+  .fact-filters span { color: var(--muted); margin-right: 4px; letter-spacing: 0.06em; }
+  .fact-btn {
+    padding: 6px 14px;
+    border: 1px solid var(--line-strong);
+    background: white;
+    border-radius: 999px;
+    font-size: 12px; font-weight: 500;
+    color: var(--ink-2);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+  .fact-btn:hover { border-color: var(--orange); color: var(--orange); }
+  .fact-btn.active { background: var(--orange); color: white; border-color: var(--orange); }
+
+  .fact-grid {
+    display: grid; grid-template-columns: 1fr; gap: 16px;
+  }
+  .fact {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 28px 32px;
+    background: white;
+    transition: all 0.2s;
+    scroll-margin-top: 100px;
+  }
+  .fact:target, .fact.flash {
+    border-color: var(--orange);
+    box-shadow: 0 0 0 4px var(--orange-soft);
+  }
+  .fact-head {
+    display: flex; align-items: flex-start; gap: 16px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .fact-id {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 600;
+    color: var(--orange);
+    background: var(--orange-soft);
+    padding: 4px 10px;
+    border-radius: 4px;
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+  }
+  .fact-q { font-size: 16px; font-weight: 600; color: var(--ink); flex: 1; min-width: 280px; }
+  .confidence {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+  .confidence::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+  }
+  .conf-H { background: var(--green-soft); color: var(--green); }
+  .conf-H::before { background: var(--green); }
+  .conf-M { background: var(--amber-soft); color: var(--amber); }
+  .conf-M::before { background: var(--amber); }
+  .conf-L { background: var(--red-soft); color: var(--red); }
+  .conf-L::before { background: var(--red); }
+  .fact-a {
+    font-size: 15px; line-height: 1.7;
+    color: var(--ink-2);
+    margin-bottom: 14px;
+  }
+  .fact-gap {
+    font-size: 13px;
+    color: var(--amber);
+    background: var(--amber-soft);
+    padding: 10px 14px;
+    border-radius: 6px;
+    border-left: 3px solid var(--amber);
+    margin-bottom: 14px;
+    font-style: italic;
+    line-height: 1.55;
+  }
+  .fact-sources {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--line);
+  }
+  .fact-sources .src-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.22em;
+    color: var(--muted); text-transform: uppercase; margin-right: 8px;
+    align-self: center;
+  }
+  .src {
+    font-size: 12px;
+    padding: 5px 10px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    color: var(--ink-2);
+    background: var(--bg-soft);
+    transition: all 0.15s;
+  }
+  .src:hover { border-color: var(--orange); color: var(--orange); background: white; }
+  .src::after { content: ' ↗'; color: var(--muted-2); font-size: 10px; }
+  .src:hover::after { color: var(--orange); }
+  .fact-tracks {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 12px;
+  }
+
+  /* ── DECISION MEMO ─────────────────────────────────────────── */
+  .memo-grid { display: grid; gap: 14px; }
+  .memo {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: white;
+    overflow: hidden;
+    transition: all 0.15s;
+    scroll-margin-top: 100px;
+  }
+  .memo:hover { border-color: var(--line-strong); }
+  .memo.open { border-color: var(--orange); box-shadow: 0 6px 30px -12px rgba(236,90,63,0.25); }
+  .memo-head {
+    padding: 24px 28px;
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    gap: 16px; align-items: center;
+    transition: background 0.15s;
+  }
+  .memo-meta { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+  .memo-head:hover { background: var(--orange-tint); }
+  .memo-id {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; font-weight: 600;
+    color: var(--orange);
+    background: var(--orange-soft);
+    padding: 6px 12px;
+    border-radius: 4px;
+    letter-spacing: 0.04em;
+  }
+  .memo-title {
+    min-width: 0;
+  }
+  .memo-title h3 {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.35;
+    margin-bottom: 4px;
+  }
+  .memo-title p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .memo.open .memo-title p { display: none; }
+  .chev {
+    width: 24px; height: 24px;
+    color: var(--muted);
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+  }
+  .memo.open .chev { transform: rotate(180deg); color: var(--orange); }
+  .memo-body {
+    display: none;
+    padding: 8px 28px 28px;
+    border-top: 1px solid var(--line);
+  }
+  .memo.open .memo-body { display: block; }
+  .memo-rec {
+    padding: 20px 24px;
+    background: var(--orange-tint);
+    border-radius: 8px;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--ink);
+    margin-top: 20px;
+  }
+  .memo-rec strong { color: var(--orange-dark); }
+  .memo-section { margin-top: 28px; }
+  .memo-section h4 {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.22em;
+    text-transform: uppercase; margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+    color: var(--ink);
+  }
+  .memo-section h4::before {
+    content: ''; width: 10px; height: 10px; border-radius: 2px;
+    background: var(--muted-2);
+  }
+  .memo-section.support h4 { color: var(--green); }
+  .memo-section.support h4::before { background: var(--green); }
+  .memo-section.counter h4 { color: var(--red); }
+  .memo-section.counter h4::before { background: var(--red); }
+  .memo-section.assume h4 { color: var(--blue); }
+  .memo-section.assume h4::before { background: var(--blue); }
+  .memo-section.flip h4 { color: var(--orange); }
+  .memo-section.flip h4::before { background: var(--orange); }
+  .memo-section.kill h4 { color: var(--red); }
+  .memo-section.kill h4::before { background: var(--red); }
+  .memo-section ul { list-style: none; padding: 0; }
+  .memo-section li {
+    padding: 10px 0 10px 24px;
+    position: relative;
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--ink-2);
+    border-bottom: 1px solid var(--line);
+  }
+  .memo-section li:last-child { border-bottom: none; }
+  .memo-section li::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 20px;
+    width: 12px; height: 1px;
+    background: var(--muted-2);
+  }
+  .memo-section.flip p { font-size: 14px; line-height: 1.7; color: var(--ink-2); }
+  .form-tag {
+    display: inline-block;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.2em;
+    padding: 3px 9px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    margin-right: 8px;
+  }
+  .form-verdict { background: var(--ink); color: white; }
+  .form-conditional { background: var(--orange-soft); color: var(--orange-dark); border: 1px solid rgba(236,90,63,0.25); }
+  .form-speculative { background: var(--amber-soft); color: var(--amber); border: 1px solid rgba(217,119,6,0.3); }
+  .derivation {
+    margin-top: 14px;
+    padding: 12px 16px;
+    background: var(--bg-soft);
+    border-left: 2px solid var(--muted-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.55;
+    font-style: italic;
+  }
+  .derivation strong { color: var(--ink-2); font-style: normal; }
+
+  /* ── UNRESOLVED BANNER ─────────────────────────────────────── */
+  .unresolved {
+    border: 1px solid rgba(217,119,6,0.35);
+    background: var(--amber-soft);
+    border-radius: 10px;
+    padding: 22px 28px;
+    margin-bottom: 28px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+  .unresolved-badge {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.22em;
+    color: var(--amber); text-transform: uppercase;
+    background: white;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(217,119,6,0.3);
+    white-space: nowrap;
+    align-self: start;
+  }
+  .unresolved h4 { font-size: 15px; font-weight: 600; color: var(--ink); margin-bottom: 8px; }
+  .unresolved p { font-size: 13px; color: var(--ink-2); line-height: 1.65; }
+  .unresolved .chips { margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .unresolved .ref-chip {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 600;
+    padding: 3px 8px;
+    background: white;
+    color: var(--amber);
+    border: 1px solid rgba(217,119,6,0.3);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .unresolved .ref-chip:hover { background: var(--amber); color: white; }
+
+  /* ── UPGRADES BANNER ───────────────────────────────────────── */
+  .upgrades {
+    max-width: var(--max); margin: 0 auto;
+    padding: 24px 32px 0;
+  }
+  .upgrades-inner {
+    background: var(--ink);
+    color: white;
+    border-radius: 10px;
+    padding: 20px 28px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 20px;
+    align-items: center;
+  }
+  .upgrades-inner .label {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.26em;
+    color: var(--orange); text-transform: uppercase;
+  }
+  .upgrades-inner .text { font-size: 13px; color: #D4D4D8; line-height: 1.55; }
+  .upgrades-inner .text strong { color: white; }
+  @media (max-width: 720px) {
+    .upgrades-inner { grid-template-columns: 1fr; }
+  }
+  .ref {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-weight: 600;
+    padding: 2px 7px;
+    background: var(--orange-soft);
+    color: var(--orange-dark);
+    border: 1px solid rgba(236,90,63,0.25);
+    border-radius: 4px;
+    margin: 0 2px;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: all 0.15s;
+  }
+  .ref:hover { background: var(--orange); color: white; }
+
+  /* ── PATHS ─────────────────────────────────────────────────── */
+  .paths-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: white;
+  }
+  .paths {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  .paths th {
+    text-align: left;
+    padding: 16px 20px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.22em;
+    color: var(--ink); text-transform: uppercase;
+    background: var(--bg-soft);
+    border-bottom: 1px solid var(--line);
+    vertical-align: middle;
+  }
+  .paths td {
+    padding: 20px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-2);
+    line-height: 1.55;
+  }
+  .paths tr:last-child td { border-bottom: none; }
+  .paths tr.chosen td { background: var(--orange-tint); }
+  .paths tr.chosen td:first-child { box-shadow: inset 4px 0 0 var(--orange); }
+  .paths tr.runner td { background: var(--bg-soft); }
+  .paths tr.dropped td:first-child { color: var(--muted-2); }
+  .paths .rank {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700; font-size: 18px;
+    color: var(--ink);
+    width: 36px;
+  }
+  .paths .pname { font-weight: 600; color: var(--ink); font-size: 14px; }
+  .paths .pname small { display: block; font-weight: 400; color: var(--muted); font-size: 12px; margin-top: 4px; }
+  .paths .status {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .st-chosen { background: var(--orange); color: white; }
+  .st-runner { background: var(--ink); color: white; }
+  .st-dropped { background: var(--line); color: var(--muted); }
+  .st-notscouted { background: var(--amber-soft); color: var(--amber); }
+  .for { color: var(--green); }
+  .against { color: var(--red); }
+
+  /* ── RUNNER UP ─────────────────────────────────────────────── */
+  .runner-card {
+    padding: 36px 40px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: white;
+  }
+  .runner-card .kicker {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.22em;
+    color: var(--ink); text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .runner-card h3 {
+    font-size: 24px;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    margin-bottom: 14px;
+  }
+  .runner-card .pitch {
+    font-size: 15px; line-height: 1.7; color: var(--ink-2);
+    margin-bottom: 24px;
+  }
+  .runner-subgrid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+    margin-top: 20px;
+  }
+  @media (max-width: 720px) { .runner-subgrid { grid-template-columns: 1fr; } }
+  .runner-subgrid h4 {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--ink); margin-bottom: 12px;
+  }
+  .runner-subgrid ul { list-style: none; padding: 0; }
+  .runner-subgrid li {
+    padding: 8px 0 8px 18px;
+    position: relative;
+    font-size: 14px; line-height: 1.6; color: var(--ink-2);
+  }
+  .runner-subgrid li::before {
+    content: '';
+    position: absolute; left: 0; top: 16px;
+    width: 8px; height: 1px; background: var(--muted-2);
+  }
+  .runner-trigger {
+    margin-top: 28px;
+    padding: 20px;
+    background: var(--orange-tint);
+    border-left: 3px solid var(--orange);
+    border-radius: 0 6px 6px 0;
+    font-size: 14px; line-height: 1.65;
+    color: var(--ink);
+  }
+
+  /* ── CONSTRAINTS / KILL SIGNALS ────────────────────────────── */
+  .two-col {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 32px;
+  }
+  @media (max-width: 860px) { .two-col { grid-template-columns: 1fr; } }
+  .card-list { display: grid; gap: 10px; }
+  .card-item {
+    padding: 18px 22px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: white;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ink-2);
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .card-item .cid {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 700;
+    color: var(--orange);
+    background: var(--orange-soft);
+    padding: 4px 8px;
+    border-radius: 4px;
+    align-self: flex-start;
+  }
+  .card-item.kill .cid { color: var(--red); background: var(--red-soft); }
+  .card-item strong { color: var(--ink); font-weight: 600; }
+
+  /* ── CONFIDENCE LEDGER ─────────────────────────────────────── */
+  .ledger {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+    background: white;
+  }
+  .ledger table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .ledger th {
+    padding: 16px 20px; text-align: left;
+    background: var(--bg-soft);
+    font-size: 11px; font-weight: 700; letter-spacing: 0.22em;
+    color: var(--ink); text-transform: uppercase;
+    border-bottom: 1px solid var(--line);
+  }
+  .ledger td {
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink-2);
+    line-height: 1.55;
+    vertical-align: top;
+  }
+  .ledger tr:last-child td { border-bottom: none; }
+  .ledger td:first-child { color: var(--ink); font-weight: 500; max-width: 420px; }
+  .ledger td:nth-child(2) { width: 120px; }
+  .ledger td:nth-child(3) { font-size: 13px; }
+  .cl-H { color: var(--green); font-weight: 700; font-size: 13px; letter-spacing: 0.06em; }
+  .cl-M { color: var(--amber); font-weight: 700; font-size: 13px; letter-spacing: 0.06em; }
+  .cl-L { color: var(--red); font-weight: 700; font-size: 13px; letter-spacing: 0.06em; }
+
+  /* ── FOOTER ────────────────────────────────────────────────── */
+  footer {
+    max-width: var(--max); margin: 0 auto;
+    padding: 64px 32px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  footer .foot-brand { display: flex; align-items: center; gap: 12px; }
+  footer .foot-brand .mini-mark {
+    width: 24px; height: 24px; background: var(--orange);
+    display: inline-block;
+  }
+
+  /* ── UTILITY ───────────────────────────────────────────────── */
+  .hidden { display: none !important; }
+  @media print {
+    .nav, .fact-filters, .chev { display: none !important; }
+    .memo-body { display: block !important; }
+    .memo { page-break-inside: avoid; border: 1px solid #ccc !important; box-shadow: none !important; }
+    .section { page-break-before: auto; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════ NAV ══════════════════ -->
+<header class="nav">
+  <div class="nav-inner">
+    <div class="brand">
+      <span class="mark-box">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M11 3 L19 18 L3 18 Z" stroke="white" stroke-width="1.5" fill="none" stroke-linejoin="round"/>
+          <rect x="9" y="13" width="4" height="3" fill="white"/>
+        </svg>
+      </span>
+      <span class="wordmark">INNOVER<span class="dot">∆</span></span>
+    </div>
+    <nav class="section-nav">
+      <a href="#summary">SUMMARY</a>
+      <a href="#argument">ARGUMENT</a>
+      <a href="#factbank">FACTBANK</a>
+      <a href="#memo">DECISION MEMO</a>
+      <a href="#paths">PATHS</a>
+      <a href="#ledger">LEDGER</a>
+    </nav>
+    <a class="cta-outline" href="cellary-dossier-2026-04-17.md" target="_blank">DOWNLOAD SOURCE ↗</a>
+  </div>
+</header>
+
+<!-- ══════════════════ HERO ══════════════════ -->
+<section class="hero" id="summary">
+  <p class="hero-meta">
+    Decision Dossier
+    <span class="sep">·</span>
+    17 April 2026
+    <span class="sep">·</span>
+    Prepared for CellarEye — Pedram Mokrian
+  </p>
+
+  <h1>
+    CellarEye — a wine inventory &amp; virtual sommelier platform for private clubs.<br>
+    <span class="accent">Pursue with conditions.</span>
+  </h1>
+
+  <div class="verdict-band">
+    <span class="chip chip-orange chip-dot">VERDICT · PURSUE WITH CONDITIONS</span>
+    <span class="chip chip-ink">CHOSEN PATH · P5 WINE VALUATION BUREAU</span>
+    <span class="chip chip-soft">OPERATING BUDGET · $1M</span>
+  </div>
+
+  <p class="hero-lead">
+    CellarEye occupies a genuine whitespace at the intersection of cellar valuation, bottle tracking, and sommelier AI, and structural demand from insurers and club finance teams is directionally real. But the Year 1 revenue model rests on three unvalidated commercial inputs — enterprise API unit economics, club CFO willingness-to-pay, and the legal classification of "market analytics" versus "appraisal" — all of which must resolve within 90 days before meaningful capital deployment is justified. Member-to-member consignment is legally foreclosed across every evidenced jurisdiction and should be removed from the product roadmap.
+  </p>
+</section>
+
+<!-- ══════════════════ ARGUMENT SPINE ══════════════════ -->
+<section class="section" id="argument">
+  <div class="section-head">
+    <div>
+      <div class="section-kicker">Argument Summary</div>
+      <h2 class="section-title">Thesis, counter, and the conditions that flip it.</h2>
+      <p class="section-desc">The strongest evidence for, the sharpest counter, the resolution, and two falsifiable conditions that would reverse the verdict.</p>
+    </div>
+  </div>
+
+  <div class="arg-grid">
+
+    <div class="arg-thesis">
+      <div class="label">Thesis</div>
+      <p>CellarEye should pursue a Wine Cellar Market Analytics Report as a low-friction, software-only revenue bridge to its full-stack hardware product, because it is the only path that eliminates the three most lethal adoption barriers — hardware onboarding, ERP API lock-out, and per-club sales cycle length — simultaneously, while generating cash within a $1M operating budget.</p>
+    </div>
+
+    <div class="arg-two">
+      <div class="arg-col">
+        <h4>Strongest evidence for</h4>
+        <ul>
+          <li>Chubb, PURE, and AIG-related carriers already <strong>require regular valuation updates</strong> for insured wine collections and offer both blanket and scheduled coverage — cellar valuation is an existing operational need in insurance workflows, not a hypothetical one. <a href="https://www.chubb.com/sg-en/individuals-families/wine-insurance.html" target="_blank">Chubb</a>; <a href="https://www.pureinsurance.com/coverage-solutions/jewelry-art-collections" target="_blank">PURE</a></li>
+          <li>PURE explicitly advertises protection <strong>up to 150% of scheduled value</strong> when market value has risen — market-movement tracking is already a recognized pain point an automated refresh service directly addresses. <a href="https://www.pureinsurance.com/coverage-solutions/jewelry-art-collections" target="_blank">PURE</a></li>
+          <li>Liv-ex frames its API-fed pricing as suitable for internal systems and client conversations, indicating an <strong>existing B2B workflow market</strong> for wine pricing data beyond trading. <a href="https://files.liv-ex.com/How_to_digitally_transform_your_wine_business_v3.pdf" target="_blank">Liv-ex</a></li>
+        </ul>
+      </div>
+
+      <div class="arg-col counter">
+        <h4>Strongest counter</h4>
+        <ul>
+          <li><strong>No insurance underwriter confirmed willingness to pay</strong> for or require automated cellar valuation data — demand from the buy side is inferred from public marketing materials, not validated by procurement evidence.</li>
+          <li>Enterprise API pricing for Wine-Searcher and Liv-ex remains unknown; <strong>if per-lookup costs exceed $0.10 at scale</strong>, per-report COGS could exceed 40% of report price, making the standalone valuation business structurally unprofitable.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="arg-resolve">
+      <h4>Resolution</h4>
+      <p>The counter-evidence identifies real execution risks but does not falsify the core demand thesis. Insurers already require valuation; the open question is whether they will pay CellarEye specifically for an automated feed, or whether clubs themselves will pay for the report to satisfy their insurers. The latter is a lower-friction sales motion that does not require insurer procurement buy-in. On API pricing, CellarEye can negotiate terms before committing capital — this is a 30-day diligence task, not a structural blocker. The alternative paths (P1, P2, P3, P6) all require Jonas/Clubessential API integration that <em>no non-acquired vendor has demonstrably secured</em>, meaning the valuation bureau's risks are knowable and time-bounded while the alternative paths face risks that are structural and potentially unresolvable.</p>
+    </div>
+
+    <div class="arg-flip">
+      <h4>What would change our mind</h4>
+      <ol>
+        <li>If fewer than 3 of 15 pilot clubs convert to paid valuation subscriptions ($3,000+ ACV) within 6 months of receiving a free cellar health check, the standalone demand thesis is falsified.</li>
+        <li>If Liv-ex or Wine-Searcher enterprise API pricing exceeds $0.10 per lookup at scale (&gt;10,000 lookups/month), making per-report COGS &gt;40% of a $500 single-report price, the unit economics are structurally broken.</li>
+      </ol>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════ FACTBANK ══════════════════ -->
+<section class="section" id="factbank">
+  <div class="section-head">
+    <div>
+      <div class="section-kicker">Factbank — 7 Validation Questions</div>
+      <h2 class="section-title">What do we know, how well, and where from.</h2>
+      <p class="section-desc">One cited answer per validation question. Confidence is based on evidence convergence and source quality; gaps are called out explicitly rather than papered over.</p>
+    </div>
+  </div>
+
+  <div class="unresolved">
+    <span class="unresolved-badge">3 of 7 unresolved</span>
+    <div>
+      <h4>Three validation questions could not be answered from open evidence — and the Decision Memo propagates that uncertainty.</h4>
+      <p>VQ-3 (average cellar size), VQ-4 (membership-size range), and VQ-5 (multi-membership %) all returned <strong>Low confidence with explicit gaps</strong>. These questions require primary CMAA / Club Benchmarking survey access or structured club interviews — they cannot be resolved by web search. <strong>Because the $62M SAM and the 1,060-club "large cellar" target depend on VQ-3</strong>, DQ-2 (Revenue potential) and DQ-4 (Pricing) inherit that Low confidence.</p>
+      <div class="chips">
+        <span class="ref-chip" data-ref="VQ-3">VQ-3 Cellar size</span>
+        <span class="ref-chip" data-ref="VQ-4">VQ-4 Membership range</span>
+        <span class="ref-chip" data-ref="VQ-5">VQ-5 Multi-membership</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="fact-filters">
+    <span>Filter by confidence:</span>
+    <button class="fact-btn active" data-filter="all">All · 7</button>
+    <button class="fact-btn" data-filter="H">High · 1</button>
+    <button class="fact-btn" data-filter="M">Medium · 2</button>
+    <button class="fact-btn" data-filter="L">Low · 4</button>
+  </div>
+
+  <div class="fact-grid">
+
+    <article class="fact" id="VQ-1" data-confidence="H">
+      <div class="fact-head">
+        <span class="fact-id">VQ-1</span>
+        <div class="fact-q">How many country clubs are there in the US?</div>
+        <span class="confidence conf-H">High</span>
+      </div>
+      <p class="fact-a">CMAA, Club Benchmarking, and NCA sources consistently place total U.S. private clubs at approximately <strong>5,659</strong>. A narrower, analytically actionable subset is <strong>3,887 clubs with annual revenue above $1M</strong>, as measured in the CMAA/Club Benchmarking/NCA Economic Impact Report. The universe includes golf, country, yacht, and racquet clubs and is not a pure country-club-only census; a country-club-only filter would produce a smaller number, though no primary source in the evidence set isolates that figure.</p>
+      <div class="fact-gap">Gap — No primary source isolates country clubs from the broader private-club universe; the 5,659 and 3,887 figures include yacht, racquet, and other club types.</div>
+      <div class="fact-sources">
+        <span class="src-label">Sources</span>
+        <a class="src" href="https://www.cmaa.org/media/01hnzs2i/economic-impact-report_executive-summary.pdf" target="_blank">CMAA — Private Club Industry Economic Impact Report</a>
+        <a class="src" href="https://www.club-mgmt.com/clubmanagement/2025january_february/MobilePagedArticle.action?articleId=2036669" target="_blank">Club Management Magazine</a>
+        <a class="src" href="https://www.clubdirectormagazine.com/clubdirector_open/library/item/2025_year_in_review/4312620/" target="_blank">Club Director Magazine</a>
+      </div>
+      <div class="fact-tracks">via CT1</div>
+    </article>
+
+    <article class="fact" id="VQ-2" data-confidence="L">
+      <div class="fact-head">
+        <span class="fact-id">VQ-2</span>
+        <div class="fact-q">How many country clubs are there in Northern California?</div>
+        <span class="confidence conf-L">Low</span>
+      </div>
+      <p class="fact-a">No primary industry census (CMAA, NGCOA, or state association) provides a verified Northern California private country club count in the evidence set. The strongest available directional source is <strong>GoPrivateGolf</strong>, a secondary directory, which lists 47 private golf courses in the Bay Area and separately references 50 private country clubs in the same region; Bay Area definition boundaries are not standardized. Sonoma and Napa Valley evidence is anecdotal, with one travel source citing six golf clubs within those two valleys combined.</p>
+      <div class="fact-gap">Gap — No CMAA chapter, NGCOA state affiliate, or California business registry source provides a verified count. Northern California vs Bay Area vs Napa/Sonoma geographic definitions are inconsistent across sources.</div>
+      <div class="fact-sources">
+        <span class="src-label">Sources</span>
+        <a class="src" href="https://www.goprivategolf.com/in/the-bay-area" target="_blank">GoPrivateGolf — Bay Area Private Courses</a>
+        <a class="src" href="https://travelclassics.com/travel-classics-archive/vintage-greens-golf-in-californias-wine-country/" target="_blank">Travel Classics — Vintage Greens</a>
+      </div>
+      <div class="fact-tracks">via CT1</div>
+    </article>
+
+    <article class="fact" id="VQ-3" data-confidence="L">
+      <div class="fact-head">
+        <span class="fact-id">VQ-3</span>
+        <div class="fact-q">What is the average size of their wine cellars (bottle count &amp; SKU count)?</div>
+        <span class="confidence conf-L">Low</span>
+      </div>
+      <p class="fact-a">No average private-club wine cellar size, bottle count, or SKU count benchmark appears in any CMAA, Club Benchmarking, or industry-survey source in the evidence set. Consumer wine-cellar design guides provide room-size-to-bottle-capacity heuristics but are not valid substitutes for observed institutional inventory data. The proposed segmentation into under 500, 500–2,500, 2,500–10,000, and 10,000+ bottle tiers, and the <strong>1,060-club "large cellar" target</strong> (representing approximately 27% of the 3,887-club universe), are hypotheses rather than validated market measurements.</p>
+      <div class="fact-gap">Gap — Need paid/private CMAA or Club Benchmarking F&amp;B operations survey tables, or primary club interviews collecting actual bottle counts and SKU distributions. No such data was accessible in the provided evidence set.</div>
+      <div class="fact-sources">
+        <span class="src-label">Sources</span>
+        <a class="src" href="https://www.cmaa.org/club-operations/research/reports-and-white-papers/" target="_blank">CMAA — Reports &amp; White Papers</a>
+        <a class="src" href="https://winecellarauthority.com/blogs/wine-cellar-design-and-construction/wine-cellar-dimensions-guide" target="_blank">Wine Cellar Authority — Size Guide</a>
+      </div>
+      <div class="fact-tracks">via CT1</div>
+    </article>
+
+    <article class="fact" id="VQ-4" data-confidence="L">
+      <div class="fact-head">
+        <span class="fact-id">VQ-4</span>
+        <div class="fact-q">What is the range of membership numbers across these clubs?</div>
+        <span class="confidence conf-L">Low</span>
+      </div>
+      <p class="fact-a">No primary CMAA or Club Benchmarking source in the evidence set provides a membership-size range or distribution across U.S. private clubs. The only numeric signal found is a secondary aggregator (WifiTalents) claiming an <strong>average of 450 members per club</strong>, with methodology not disclosed and some statistics labeled as directional. This figure should be treated as a rough order-of-magnitude placeholder rather than a validated benchmark.</p>
+      <div class="fact-gap">Gap — Need CMAA or Club Benchmarking membership-demographic tables with medians, quartiles, and club-type breakouts. No primary-source range distribution was present in the materials reviewed.</div>
+      <div class="fact-sources">
+        <span class="src-label">Sources</span>
+        <a class="src" href="https://wifitalents.com/private-club-industry-statistics/" target="_blank">WifiTalents — Industry Statistics</a>
+        <a class="src" href="https://www.cmaa.org/club-operations/research/surveys/" target="_blank">CMAA — Surveys</a>
+      </div>
+      <div class="fact-tracks">via CT1</div>
+    </article>
+
+    <article class="fact" id="VQ-5" data-confidence="L">
+      <div class="fact-head">
+        <span class="fact-id">VQ-5</span>
+        <div class="fact-q">What percentage of these members hold multiple club memberships?</div>
+        <span class="confidence conf-L">Low</span>
+      </div>
+      <p class="fact-a">No credible source in the evidence set provides a percentage of private-club members holding multiple memberships. The NCGA defines the term "multi-member" in a golf-handicap context, and HFTP commentary discusses evolving member preferences, but <strong>neither source quantifies multi-membership prevalence</strong> among country-club or HNW households.</p>
+      <div class="fact-gap">Gap — Requires a survey-based or wealth-management source quantifying multi-club membership among private-club members or HNW households. This data point was not found in any of the six tracks.</div>
+      <div class="fact-sources">
+        <span class="src-label">Sources</span>
+        <a class="src" href="https://support.ncga.org/knowledge/what-is-a-multi-member" target="_blank">NCGA — Multi-member definition</a>
+        <a class="src" href="https://www.hftp.org/news/4129008/private-members-clubs-20-evolution-continues" target="_blank">HFTP — Private Members' Clubs 2.0</a>
+      </div>
+      <div class="fact-tracks">via CT1, CT2</div>
+    </article>
+
+    <article class="fact" id="VQ-6" data-confidence="M">
+      <div class="fact-head">
+        <span class="fact-id">VQ-6</span>
+        <div class="fact-q">Top 5 pain points of private clients with large cellars in wine management &amp; consumption?</div>
+        <span class="confidence conf-M">Medium</span>
+      </div>
+      <p class="fact-a">The five best-supported pain points across the evidence: <strong>(1) inventory shrinkage and beverage variance</strong> — FoodTrak estimates clubs lose approximately 5% of F&amp;B revenue to kitchen-related overuse; RestaurantOwner cites 3–4% of sales lost to theft in restaurants; <strong>(2) lack of real-time inventory visibility and stale wine lists</strong> — multiple club-targeted vendors (bevSavvy, BinWise, MyWineGuide) position live list-to-inventory synchronization as their core value proposition; <strong>(3) spoilage and storage-condition failures</strong> from improper temperature and humidity management; <strong>(4) missed optimal drinking windows</strong> causing financial loss from forgotten or over-aged bottles; <strong>(5) poor bottle-location traceability</strong> during movement within or between cellars. Evidence weight is strongest for shrinkage (moderate, with numeric benchmarks) and weakest for drinking-window and location pain (primarily vendor-claimed).</p>
+      <div class="fact-gap">Gap — Missing independent club-specific ranking of pain points with quantified dollar impact for wine programs specifically rather than general F&amp;B. Most evidence outside shrinkage is vendor-marketing framing rather than third-party measurement.</div>
+      <div class="fact-sources">
+        <span class="src-label">Sources</span>
+        <a class="src" href="https://www.foodtrak.com/docs/ArticleBooklet-ReducingSubsidies201303.pdf" target="_blank">FoodTrak — Reducing F&amp;B Subsidies</a>
+        <a class="src" href="https://www.restaurantowner.com/public/75-Percent-of-All-Inventory-Shrinkage-Happens-as-a-Result-of-Theft.cfm" target="_blank">RestaurantOwner — Shrinkage</a>
+        <a class="src" href="https://bevsavvy.com/digital-wine-lists-for-golf-clubs/" target="_blank">bevSavvy — Digital Wine Lists</a>
+        <a class="src" href="https://invintory.com/blog/the-real-cost-of-mismanaging-a-wine-cellar-and-how-apps-prevent-it/" target="_blank">InVintory — Real Cost</a>
+        <a class="src" href="https://www.foreupgolf.com/top-3-things-clubs-do-wrong-with-food-beverage-inventory/" target="_blank">foreUP — Top 3 F&amp;B Issues</a>
+      </div>
+      <div class="fact-tracks">via CT2, CT3</div>
+    </article>
+
+    <article class="fact" id="VQ-7" data-confidence="M">
+      <div class="fact-head">
+        <span class="fact-id">VQ-7</span>
+        <div class="fact-q">What is the consignment model for wine? Can a golf-club member exchange bottles with other members?</div>
+        <span class="confidence conf-M">Medium</span>
+      </div>
+      <p class="fact-a">The evidence across federal and state sources <strong>does not support a lawful member-to-member wine consignment or exchange model</strong> inside private clubs. Federal TTB regulations (27 CFR Part 11) govern consignment sales in trade-buyer contexts involving licensed and bonded actors, not private individuals. New York SLA explicitly states club licenses may not be used so members can purchase bottle or case goods for off-premises use. Texas TABC requires club wine purchases to come from licensed package stores. California ABC license documentation does not affirmatively authorize member resale. <strong>No sourced operating example</strong> was found of a private club lawfully running a member-to-member consignment marketplace in any of these four states.</p>
+      <div class="fact-gap">Gap — Florida primary authority (DBPR/ABT statutes and advisories) was not found. No state-approved club member-consignment operating model was sourced in CA, FL, NY, or TX. Federal edge-case interpretation under TTB Industry Circular 2022-1 regarding payment timing remains contested in secondary legal commentary.</div>
+      <div class="fact-sources">
+        <span class="src-label">Sources</span>
+        <a class="src" href="https://www.ecfr.gov/current/title-27/chapter-I/subchapter-A/part-11" target="_blank">eCFR — 27 CFR Part 11</a>
+        <a class="src" href="https://sla.ny.gov/system/files/documents/2018/08/notice-club-licensees-102314-2.pdf" target="_blank">NY SLA — Notice to Clubs</a>
+        <a class="src" href="https://www.tabc.texas.gov/static/sites/default/files/2021-08/private-club-permit-n-on-premise-retailers-lc.pdf" target="_blank">TX TABC — Private Club Permit</a>
+        <a class="src" href="https://www.abc.ca.gov/licensing/license-types/" target="_blank">CA ABC — License Types</a>
+        <a class="src" href="https://www.ttb.gov/regulated-commodities/beverage-alcohol/wine/wine-faqs" target="_blank">TTB — Wine FAQs</a>
+      </div>
+      <div class="fact-tracks">via CT2, CT3</div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ══════════════════ DECISION MEMO ══════════════════ -->
+<section class="section" id="memo">
+  <div class="section-head">
+    <div>
+      <div class="section-kicker">Decision Memo — 8 Primary Questions</div>
+      <h2 class="section-title">What we recommend, why, and what would flip it.</h2>
+      <p class="section-desc">Every claim cites a FactBank entry. Each memo carries a <span class="form-tag form-verdict">Verdict</span>, <span class="form-tag form-conditional">Conditional</span>, or <span class="form-tag form-speculative">Speculative</span> badge indicating how load-bearing the recommendation is relative to the underlying evidence.</p>
+    </div>
+  </div>
+
+  <div class="memo-grid">
+
+    <!-- DQ-1 -->
+    <article class="memo open" id="DQ-1" data-confidence="M">
+      <div class="memo-head">
+        <div class="memo-meta"><span class="form-tag form-conditional">Conditional</span><span class="memo-id">DQ-1</span></div>
+        <div class="memo-title">
+          <h3>Is this a worthwhile business?</h3>
+          <p>Yes, with three hard conditions that must be resolved within 90 days before meaningful capital deployment.</p>
+        </div>
+        <span class="confidence conf-M">Medium</span>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </div>
+      <div class="memo-body">
+        <div class="memo-rec"><strong>Recommendation:</strong> Yes, with three hard conditions that must be resolved within 90 days before meaningful capital deployment. CellarEye occupies a real and currently unoccupied whitespace — no evidenced competitor combines automated cellar-level valuation, physical bottle tracking, and sommelier AI — and structural demand from insurers and club finance teams is directionally validated. The three most critical commercial inputs (enterprise API unit economics, club CFO willingness-to-pay, and legal classification as "market analytics") are all unvalidated, meaning the business is a conditional pursue, not an unconditional one. If all three conditions resolve favorably, this is a fundable venture with a credible $62M SAM and a defensible sequenced product ladder; if two or more fail, pivot to the Luxury Hotel Beachhead (P4).</div>
+
+        <div class="memo-section support">
+          <h4>Supporting evidence</h4>
+          <ul>
+            <li>No evidenced competitor currently combines automated cellar-level valuation reporting, physical bottle-level tracking, and virtual sommelier AI in a single integrated offering, confirming a genuine product whitespace. <span class="ref" data-ref="VQ-6">VQ-6</span></li>
+            <li>Insurance carriers Chubb and PURE already require regular valuation updates for insured wine collections, confirming that cellar valuation is an existing operational need rather than a hypothetical one. <span class="ref" data-ref="VQ-6">VQ-6</span></li>
+            <li>The analytically grounded SAM of 3,887 U.S. private clubs with revenue above $1M is validated by gold-standard CMAA/Club Benchmarking/NCA sources, providing a credible market denominator. <span class="ref" data-ref="VQ-1">VQ-1</span></li>
+            <li>Inventory shrinkage (estimated at 3–5% of F&amp;B revenue) and stale wine list pain are recurring, independently corroborated operational problems across club and restaurant hospitality. <span class="ref" data-ref="VQ-6">VQ-6</span></li>
+          </ul>
+        </div>
+
+        <div class="memo-section counter">
+          <h4>Counter evidence</h4>
+          <ul>
+            <li>No insurance underwriter has confirmed willingness to pay for or require automated cellar valuation data from CellarEye specifically; demand is inferred from public marketing materials, not validated procurement evidence. <span class="ref" data-ref="VQ-6">VQ-6</span> <span class="ref" data-ref="VQ-7">VQ-7</span></li>
+            <li>The entire Year 1 revenue model depends on club CFO willingness-to-pay for standalone valuation reports, which has not been tested in any structured buyer interview. <span class="ref" data-ref="VQ-3">VQ-3</span> <span class="ref" data-ref="VQ-4">VQ-4</span></li>
+            <li>The 500,000-wine pricing database is described in competitive analysis as replicable by any player with API access, meaning the valuation report alone is not a durable moat without the hardware layer. <span class="ref" data-ref="VQ-3">VQ-3</span></li>
+          </ul>
+        </div>
+
+        <div class="memo-section assume">
+          <h4>Key assumptions</h4>
+          <ul>
+            <li>Enterprise API pricing from Liv-ex and Wine-Searcher will support gross margins above 60% on valuation reports at the planned price points.</li>
+            <li>Club CFOs will treat automated valuation reports as a finance-department budget item distinct from general IT or F&amp;B software, enabling a $3,000–$6,000 ACV purchase.</li>
+            <li>Legal counsel will confirm that "market analytics" labeling is sufficient to avoid state appraiser licensure requirements in California and Florida.</li>
+            <li>Hardware conversion from valuation report customers will occur at sufficient rates to justify the sequencing strategy.</li>
+          </ul>
+        </div>
+
+        <div class="memo-section flip">
+          <h4>What would change our mind</h4>
+          <p>If fewer than 3 of 10 structured club CFO discovery interviews result in expressed willingness to pay $3,000+ per year for automated cellar valuation reports, <em>and</em> if enterprise API pricing from either Liv-ex or Wine-Searcher exceeds $0.10 per lookup, the business case is falsified and the recommendation flips to <strong>Pivot to P4 (Luxury Hotel Beachhead)</strong>.</p>
+        </div>
+
+        <div class="memo-section kill">
+          <h4>Kill signals</h4>
+          <ul>
+            <li>Fewer than 3 of 15 pilot clubs convert to paid valuation subscriptions at $3,000+ ACV within 6 months of receiving a free cellar health check.</li>
+            <li>Legal counsel determines "market analytics" framing does not insulate from appraiser licensing requirements in California or Florida AND no licensed appraiser partnership can be structured within 60 days.</li>
+            <li>Liv-ex or Wine-Searcher enterprise API pricing confirmed above $0.10 per lookup, making per-report COGS exceed 40% of a $500 single-report price.</li>
+          </ul>
+        </div>
+      </div>
+    </article>
+
+    <!-- DQ-2 -->
+    <article class="memo" id="DQ-2" data-confidence="L">
+      <div class="memo-head">
+        <div class="memo-meta"><span class="form-tag form-speculative">Speculative</span><span class="memo-id">DQ-2</span></div>
+        <div class="memo-title">
+          <h3>What is the revenue potential and market opportunity?</h3>
+          <p>$62M SAM conservatively modeled. SOM: 50 club subs Year 1 ($225K ARR) → 200 by Year 3 ($900K ARR).</p>
+        </div>
+        <span class="confidence conf-L">Low</span>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </div>
+      <div class="memo-body">
+        <div class="memo-rec"><strong>Recommendation:</strong> Model the primary SAM conservatively at <strong>$62M</strong>, derived from 3,887 revenue-qualified U.S. private clubs (CMAA-verified) at a blended $16K average annual contract value. Limit the initial SOM to 50 club subscriptions in Year 1 ($225K ARR), scaling to 200 subscriptions by Year 3 ($900K ARR) before hardware conversion uplift. The 1,060-club "large cellar" target is a reasonable working hypothesis at roughly 27% of the universe but must be validated through primary club interviews before being cited in investor materials. Do not include the hotel or HNW private-cellar market in Year 1 revenue projections; treat them as Year 3+ optionality worth a rough additional $28M SAM based on ~1,750 AAA Four Diamond hotels.</div>
+
+        <div class="memo-section support">
+          <h4>Supporting evidence</h4>
+          <ul>
+            <li>The 3,887-club universe with revenue above $1M is validated by gold-standard CMAA/Club Benchmarking/NCA sources. <span class="ref" data-ref="VQ-1">VQ-1</span></li>
+            <li>Some luxury hotels demonstrably operate wine programs at or well above 2,500 bottles (The Little Nell at 20,000; Luce Intercontinental at 8,000), confirming account-level fit in the hotel segment. <span class="ref" data-ref="VQ-3">VQ-3</span></li>
+            <li>Club beverage cost benchmarks show a 2-percentage-point gap between lower- and higher-performing clubs (34.9% vs 32.9%), confirming that wine program efficiency is a material financial lever. <span class="ref" data-ref="VQ-6">VQ-6</span></li>
+            <li>Auction houses (Sotheby's, Christie's) offer free manual wine estimates — CellarEye's value must be positioned as recurring, automated, portfolio-level analytics rather than a simple appraisal. <span class="ref" data-ref="VQ-3">VQ-3</span></li>
+          </ul>
+        </div>
+
+        <div class="memo-section counter">
+          <h4>Counter evidence</h4>
+          <ul>
+            <li>The 1,060-club "large cellar" segment is not validated from any primary source; it is only arithmetically derivable as 27% of the 3,887-club universe and should be treated as a hypothesis. <span class="ref" data-ref="VQ-3">VQ-3</span></li>
+            <li>No primary source quantifies the share of AAA Four/Five Diamond hotels with 2,500+ bottle wine programs. <span class="ref" data-ref="VQ-3">VQ-3</span></li>
+            <li>Commercial wine-storage and HNW private-cellar market estimates conflict materially across sources (USD 465M vs. USD 3.24B depending on definition). <span class="ref" data-ref="VQ-3">VQ-3</span> <span class="ref" data-ref="VQ-4">VQ-4</span></li>
+          </ul>
+        </div>
+
+        <div class="memo-section flip">
+          <h4>What would change our mind</h4>
+          <p>If direct club interviews with 20+ F&amp;B directors and CFOs reveal that <strong>fewer than 20% of clubs maintain wine programs exceeding 500 bottles</strong>, the 1,060-club large-cellar SAM segment collapses to below 200 viable accounts, making the $62M SAM figure structurally overstated and requiring a full market re-size.</p>
+        </div>
+
+        <div class="memo-section kill">
+          <h4>Kill signals</h4>
+          <ul>
+            <li>CMAA releases updated data showing revenue-qualified club count has declined more than 20% from the 3,887 baseline.</li>
+            <li>Liv-ex 1000 index drops more than 15% over 12 consecutive months, collapsing the "unlock hidden equity" value narrative.</li>
+          </ul>
+        </div>
+      </div>
+    </article>
+
+    <!-- DQ-3 -->
+    <article class="memo" id="DQ-3" data-confidence="M">
+      <div class="memo-head">
+        <div class="memo-meta"><span class="form-tag form-verdict">Verdict</span><span class="memo-id">DQ-3</span></div>
+        <div class="memo-title">
+          <h3>What are the key benefits and features?</h3>
+          <p>Four-feature MVP: valuation report → shrinkage discovery → live list sync → drinking-window alerts. Sommelier AI as upsell layer.</p>
+        </div>
+        <span class="confidence conf-M">Medium</span>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </div>
+      <div class="memo-body">
+        <div class="memo-rec"><strong>Recommendation:</strong> Prioritize four features in MVP build order: <strong>(1) Automated cellar-level mark-to-market valuation report</strong> — the core differentiator with no direct competitor; <strong>(2) Shrinkage and beverage-variance discovery module</strong> — the most quantifiably evidenced pain point; <strong>(3) Live wine-list-to-inventory synchronization</strong> — validated as a recurring workflow failure across multiple club-targeted vendors; <strong>(4) Drinking-window and aging alerts</strong>. Virtual sommelier AI should be built as a fifth feature but positioned as a member-facing upsell, not a primary institutional sales driver, as club-specific ROI evidence remains thin.</div>
+
+        <div class="memo-section support">
+          <h4>Supporting evidence</h4>
+          <ul>
+            <li>No evidenced competitor (BinWise, Uncorkd, Preferabli, SevenFifty, CellarTracker, Vivino) combines automated cellar-level valuation reporting, physical bottle-level tracking, and sommelier AI. <span class="ref" data-ref="VQ-6">VQ-6</span></li>
+            <li>Inventory shrinkage of 3–5% of F&amp;B revenue is the most numerically validated pain point in private clubs and restaurants. <span class="ref" data-ref="VQ-6">VQ-6</span></li>
+            <li>Multiple club-targeted vendors position real-time inventory-to-wine-list sync as their core value proposition. <span class="ref" data-ref="VQ-6">VQ-6</span></li>
+            <li>Academic literature confirms active research in AI-driven food and wine pairing and recommender systems. <span class="ref" data-ref="VQ-6">VQ-6</span></li>
+          </ul>
+        </div>
+
+        <div class="memo-section counter">
+          <h4>Counter evidence</h4>
+          <ul>
+            <li>BinWise already offers variance reporting and inventory controls targeting clubs with a 50+ POS integration installed base. <span class="ref" data-ref="VQ-6">VQ-6</span></li>
+            <li>Club-specific ROI evidence for AI wine pairing is thin; academic support exists for the technology but business-case evidence in clubs is absent. <span class="ref" data-ref="VQ-6">VQ-6</span></li>
+            <li>No direct certified integrations between CellarEye or major wine-tech competitors and Jonas Club Software, Clubessential, or Oracle OPERA were substantiated. <span class="ref" data-ref="VQ-6">VQ-6</span></li>
+          </ul>
+        </div>
+
+        <div class="memo-section flip">
+          <h4>What would change our mind</h4>
+          <p>If direct competitive research on Alfred Technologies, InCellar, or another unresearched competitor reveals a deployed product combining automated valuation, physical tracking, and sommelier AI with existing club POS integrations, the whitespace thesis is falsified and CellarEye must identify a narrower differentiation lane.</p>
+        </div>
+
+        <div class="memo-section kill">
+          <h4>Kill signals</h4>
+          <ul>
+            <li>A well-funded competitor (BinWise parent, Jonas/Clubessential internally, or a new entrant) launches an automated cellar-level valuation feature with native POS integration within 12 months.</li>
+            <li>Discovery research with 10+ club F&amp;B directors reveals valuation reports are not a CFO-level purchase and must go through a tech committee alongside Jonas/Clubessential renewals, extending sales cycle beyond 9 months.</li>
+          </ul>
+        </div>
+      </div>
+    </article>
+
+    <!-- DQ-4 -->
+    <article class="memo" id="DQ-4" data-confidence="L">
+      <div class="memo-head">
+        <div class="memo-meta"><span class="form-tag form-speculative">Speculative</span><span class="memo-id">DQ-4</span></div>
+        <div class="memo-title">
+          <h3>What could the pricing be per year?</h3>
+          <p>Four-tier architecture: $500 single report · $3K–$6K subscription · $9.6K–$18K full stack with hardware · $10K–$25K advisor licence.</p>
+        </div>
+        <span class="confidence conf-L">Low</span>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </div>
+      <div class="memo-body">
+        <div class="memo-rec"><strong>Recommendation:</strong> Four-tier price architecture with clear institutional-versus-consumer separation: <strong>(1) Single valuation report at $500</strong> — entry point for clubs not ready to subscribe, must be positioned as analytics not appraisal; <strong>(2) Valuation subscription at $3,000–$6,000/yr</strong> — quarterly refresh, shrinkage flagging, drinking-window alerts; <strong>(3) Full-stack subscription with hardware at $9,600–$18,000/yr</strong>; <strong>(4) Advisor/broker license at $10,000–$25,000/yr</strong> — conditional launch only if broker WTP interviews validate. Do not launch $500 standalone without explicit "market analytics" labeling.</div>
+
+        <div class="memo-section support">
+          <h4>Supporting evidence</h4>
+          <ul>
+            <li>Mainstream beverage inventory SaaS typically prices at $10–$100 per month ($120–$1,200 annually), so CellarEye's $3K–$6K subscription must be justified as a higher-value analytics service. <span class="ref" data-ref="VQ-3">VQ-3</span> <span class="ref" data-ref="VQ-6">VQ-6</span></li>
+            <li>Enterprise club management platforms (Jonas, Clubessential, Northstar) are quote-only — club tech buyers are accustomed to customized pricing conversations. <span class="ref" data-ref="VQ-4">VQ-4</span></li>
+            <li>Auction houses (Christie's, Sotheby's) offer free manual wine estimates, which undercuts a $500 standalone report unless positioned as faster, recurring, non-consignment analytics. <span class="ref" data-ref="VQ-7">VQ-7</span></li>
+          </ul>
+        </div>
+
+        <div class="memo-section counter">
+          <h4>Counter evidence</h4>
+          <ul>
+            <li>CellarEye's own visible app pricing (Premium $129/yr, Premium+ $299/yr, Starter+ $39/yr) creates a buyer-perception anchor 10–20x below proposed club tiers, requiring clear product-line separation. <span class="ref" data-ref="VQ-3">VQ-3</span></li>
+            <li>No direct WTP evidence from club CFOs, GMs, or beverage directors exists in any track — all proposed price points are hypotheses. <span class="ref" data-ref="VQ-3">VQ-3</span> <span class="ref" data-ref="VQ-4">VQ-4</span></li>
+            <li>Public enterprise pricing for Liv-ex and Wine-Searcher APIs is absent, leaving the COGS floor uncertain. <span class="ref" data-ref="VQ-3">VQ-3</span></li>
+          </ul>
+        </div>
+
+        <div class="memo-section flip">
+          <h4>What would change our mind</h4>
+          <p>If structured pricing interviews with 10 club CFOs reveal the perceived value ceiling for any standalone wine analytics subscription is <strong>below $2,000 per year</strong>, the proposed $3K–$6K tier is not achievable and pricing must be restructured around volume or per-report fees.</p>
+        </div>
+
+        <div class="memo-section kill">
+          <h4>Kill signals</h4>
+          <ul>
+            <li>BinWise or a comparable incumbent announces a valuation reporting feature at no additional cost to existing subscribers.</li>
+            <li>Competitive appraisal benchmarking reveals licensed independent appraisers charge less than $500 per comprehensive cellar report with faster turnaround.</li>
+          </ul>
+        </div>
+      </div>
+    </article>
+
+    <!-- DQ-5 -->
+    <article class="memo" id="DQ-5" data-confidence="M">
+      <div class="memo-head">
+        <div class="memo-meta"><span class="form-tag form-verdict">Verdict</span><span class="memo-id">DQ-5</span></div>
+        <div class="memo-title">
+          <h3>What features or revenue opportunities are we missing?</h3>
+          <p>Add: digital member lockers, pre-arrival ordering, insurance compliance package. Defer: consignment, underwriter data feed.</p>
+        </div>
+        <span class="confidence conf-M">Medium</span>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </div>
+      <div class="memo-body">
+        <div class="memo-rec"><strong>Recommendation:</strong> Three high-potential additions: <strong>(1) Digital member wine lockers</strong> — member-owned bottles registered and tracked within the club; <strong>(2) Pre-arrival wine ordering and cellar reservation</strong> — reduces sommelier staffing burden, increases throughput; <strong>(3) Insurance compliance documentation package</strong> designed to satisfy Chubb/PURE carrier requirements, potentially earning preferred-provider status. <strong>Defer:</strong> member-to-member consignment (legally blocked), insurance underwriter data feed licensing (unvalidated procurement path), RFID/NFC without Jonas/Clubessential integration (too much friction).</div>
+
+        <div class="memo-section support">
+          <h4>Supporting evidence</h4>
+          <ul>
+            <li>Digital member wine lockers and pre-arrival ordering are repeatedly featured in club-targeted wine software (MyWineGuide, bevSavvy). <span class="ref" data-ref="VQ-6">VQ-6</span> <span class="ref" data-ref="VQ-7">VQ-7</span></li>
+            <li>PURE Insurance offers protection up to 150% of scheduled value when market value has risen — CellarEye's quarterly refresh service directly addresses this. <span class="ref" data-ref="VQ-6">VQ-6</span></li>
+            <li>Member-to-member wine consignment or exchange is legally unsupported across all evidenced jurisdictions (NY, TX, CA, and inferred FL). <span class="ref" data-ref="VQ-7">VQ-7</span></li>
+            <li>Competitors' capabilities cluster into separate functional buckets with no single player combining valuation, physical tracking, and AI recommendation. <span class="ref" data-ref="VQ-6">VQ-6</span></li>
+          </ul>
+        </div>
+
+        <div class="memo-section counter">
+          <h4>Counter evidence</h4>
+          <ul>
+            <li>The insurance compliance documentation package requires carrier buy-in or preferred-provider listing; no carrier has confirmed willingness to direct clients to a specific automated valuation provider. <span class="ref" data-ref="VQ-6">VQ-6</span> <span class="ref" data-ref="VQ-7">VQ-7</span></li>
+            <li>Alfred Technologies already serves both hotel and private-collector segments with wine inventory management — the member-facing digital locker space is not entirely unoccupied. <span class="ref" data-ref="VQ-6">VQ-6</span></li>
+          </ul>
+        </div>
+
+        <div class="memo-section flip">
+          <h4>What would change our mind</h4>
+          <p>If legal review determines that operating a digital member locker platform (where member-owned bottles are registered and tracked within a licensed club's system) creates ABC compliance exposure in California or Florida, this feature must be restructured or deferred.</p>
+        </div>
+
+        <div class="memo-section kill">
+          <h4>Kill signals</h4>
+          <ul>
+            <li>State ABC enforcement action against any private club operating a digital member locker or member-wine registration system in California, Texas, New York, or Florida.</li>
+            <li>A carrier (Chubb, PURE, or AIG) publicly announces that automated software-generated wine valuations are not acceptable for scheduled coverage updates.</li>
+          </ul>
+        </div>
+      </div>
+    </article>
+
+    <!-- DQ-6 -->
+    <article class="memo" id="DQ-6" data-confidence="H">
+      <div class="memo-head">
+        <div class="memo-meta"><span class="form-tag form-verdict">Verdict</span><span class="memo-id">DQ-6</span></div>
+        <div class="memo-title">
+          <h3>With a $1M annual operating budget, can this business be cashflow positive?</h3>
+          <p>Not Year 1, probably not Year 2. Fund as 24-month runway to first cashflow-positive quarter.</p>
+        </div>
+        <span class="confidence conf-H">High</span>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </div>
+      <div class="memo-body">
+        <div class="memo-rec"><strong>Recommendation:</strong> No, not in Year 1 at the planned revenue level, and probably not in Year 2 without significant acceleration. Modeled Year 1 opex ($710K–$930K) versus $345K total revenue (of which only $225K is recurring ARR) implies an operating loss of <strong>$365K–$585K</strong>. Year 2 cashflow positivity requires reaching ~150 club subscriptions at $4,500 ACV ($675K ARR) while holding opex flat — a 3x revenue increase that requires sales productivity data not yet in evidence. Fund as 24-month runway to first cashflow-positive quarter, with API cost scenarios and club CAC validated within the first 90 days.</div>
+
+        <div class="memo-section support">
+          <h4>Supporting evidence</h4>
+          <ul>
+            <li>Modeled Year 1 P&amp;L shows total revenue of $345K vs opex of $710K–$930K, producing an operating loss of $365K–$585K. <span class="ref" data-ref="VQ-1">VQ-1</span> <span class="ref" data-ref="VQ-3">VQ-3</span></li>
+            <li>SaaS gross margin benchmarks of 70–85% are achievable per-customer if API costs stay near the low scenario ($0.01–$0.05 per lookup). <span class="ref" data-ref="VQ-3">VQ-3</span></li>
+            <li>Liv-ex and Wine-Searcher APIs are technically available for B2B valuation, supporting product feasibility — but enterprise pricing terms are absent. <span class="ref" data-ref="VQ-3">VQ-3</span></li>
+          </ul>
+        </div>
+
+        <div class="memo-section counter">
+          <h4>Counter evidence</h4>
+          <ul>
+            <li>No club-specific CAC, close-rate, or sales-cycle benchmark was found — the 50-club Year 1 target is an unvalidated assumption. <span class="ref" data-ref="VQ-1">VQ-1</span> <span class="ref" data-ref="VQ-4">VQ-4</span></li>
+            <li>Hardware one-time revenue ($120K from 10 conversions) is excluded from standard ARR definitions; true recurring ARR is $225K, not $345K. <span class="ref" data-ref="VQ-3">VQ-3</span></li>
+            <li>If Liv-ex or Wine-Searcher API pricing exceeds $0.10 per lookup at scale, annual API cost alone could reach $30K+ for 50 accounts. <span class="ref" data-ref="VQ-3">VQ-3</span></li>
+          </ul>
+        </div>
+
+        <div class="memo-section flip">
+          <h4>What would change our mind</h4>
+          <p>If API pricing is confirmed below $0.05 per lookup <strong>AND</strong> club discovery interviews yield expressed WTP $4,500+ ACV from at least 5 of 10 CFOs, the Year 2 cashflow-positive path becomes credible at 100–120 subscriptions. Conversely, if closing one club subscription requires more than $8,000 in sales expense, LTV:CAC at $4,500 ACV falls below 2:1 and the model is structurally unviable.</p>
+        </div>
+
+        <div class="memo-section kill">
+          <h4>Kill signals</h4>
+          <ul>
+            <li>API pricing confirmed above $0.10 per lookup, making annual API COGS exceed $30K for 50 accounts and gross margin fall below 50% on the subscription tier.</li>
+            <li>Pilot sales funnel after 6 months shows fewer than 8 clubs in late-stage evaluation despite outreach to 50+ prospects.</li>
+            <li>Total Year 1 opex tracks above $950K by month 9 without revenue acceleration.</li>
+          </ul>
+        </div>
+      </div>
+    </article>
+
+    <!-- DQ-7 -->
+    <article class="memo" id="DQ-7" data-confidence="H">
+      <div class="memo-head">
+        <div class="memo-meta"><span class="form-tag form-verdict">Verdict</span><span class="memo-id">DQ-7</span></div>
+        <div class="memo-title">
+          <h3>What would be the critical hires?</h3>
+          <p>4-person core: wine-domain ops lead, full-stack engineer, sales &amp; partnerships lead, ops/CS hybrid. Fractional counsel from Day 1.</p>
+        </div>
+        <span class="confidence conf-H">High</span>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </div>
+      <div class="memo-body">
+        <div class="memo-rec"><strong>Recommendation:</strong> Build a four-person Year 1 core team: <strong>(1) Wine-domain operations lead</strong> — former private-club F&amp;B director or wine director (not a floor sommelier), $108K–$169K loaded; <strong>(2) Full-stack engineer</strong> — $168K–$247K loaded, MVP build and API integration; <strong>(3) Sales and partnerships lead</strong> with existing private-club relationships — $108K–$169K base, $130K–$180K OTE; <strong>(4) Ops / CS hybrid</strong> — $84K–$143K, ideally absorbed by a founder in Year 1. Add <strong>fractional legal counsel at ~$15K–$20K annually from Day 1</strong>; defer full-time data engineering to Year 2.</div>
+
+        <div class="memo-section support">
+          <h4>Supporting evidence</h4>
+          <ul>
+            <li>A former private-club F&amp;B director profile is more commercially valuable for the wine-domain lead than a floor sommelier — the need is buyer trust and operational credibility, not wine service execution. <span class="ref" data-ref="VQ-6">VQ-6</span></li>
+            <li>Fractional general counsel is well-evidenced as the appropriate legal structure for Year 1 startups needing recurring contract and compliance support at ~$15K–$20K. <span class="ref" data-ref="VQ-7">VQ-7</span></li>
+            <li>Sommelier/beverage-director compensation conflicts across sources ($46K avg to $125K+ for wine director roles), confirming the wine-domain hire must be scoped against actual commercial responsibilities. <span class="ref" data-ref="VQ-6">VQ-6</span></li>
+          </ul>
+        </div>
+
+        <div class="memo-section counter">
+          <h4>Counter evidence</h4>
+          <ul>
+            <li>No club-specific CAC or sales-cycle benchmark was found — the productivity requirement implied by the sales lead hire (50 closed accounts in Year 1) is unvalidated. <span class="ref" data-ref="VQ-1">VQ-1</span> <span class="ref" data-ref="VQ-4">VQ-4</span></li>
+            <li>Full-stack engineer loaded cost of $168K–$247K is the largest single budget line; if no founding engineer is on the team, this hire consumes 17–25% of the annual budget. <span class="ref" data-ref="VQ-3">VQ-3</span></li>
+          </ul>
+        </div>
+
+        <div class="memo-section flip">
+          <h4>What would change our mind</h4>
+          <p>If a founder already holds deep private-club F&amp;B relationships and wine-domain credibility, the wine-domain lead hire can be deferred to Year 2, freeing ~$120K–$150K of loaded payroll to extend runway or accelerate the engineering hire.</p>
+        </div>
+
+        <div class="memo-section kill">
+          <h4>Kill signals</h4>
+          <ul>
+            <li>After 9 months, sales lead has closed no paid subscription deals and pipeline shows fewer than 5 clubs in late-stage evaluation — wrong hire profile or PMF problem.</li>
+            <li>Full-stack engineer hire is not secured within 60 days of funding close, delaying MVP past the 6-month target.</li>
+          </ul>
+        </div>
+      </div>
+    </article>
+
+    <!-- DQ-8 -->
+    <article class="memo" id="DQ-8" data-confidence="M">
+      <div class="memo-head">
+        <div class="memo-meta"><span class="form-tag form-conditional">Conditional</span><span class="memo-id">DQ-8</span></div>
+        <div class="memo-title">
+          <h3>Is expansion from clubs to hotels/resorts/storage a logical next step? Club → HNW funnel?</h3>
+          <p>Hotels: yes, Year 3 fallback (P4). Club-to-HNW funnel: unvalidated; pursue opportunistically via member lockers.</p>
+        </div>
+        <span class="confidence conf-M">Medium</span>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </div>
+      <div class="memo-body">
+        <div class="memo-rec"><strong>Recommendation:</strong> Yes, hotel expansion is the logical Year 3 move and should be formally activated as the fallback path (P4) if club momentum stalls before Year 2. The hotel case is stronger technically (Oracle OPERA and Lightspeed have documented open APIs versus club ERP lock-in) and has a larger reward ceiling per account. However, hotel expansion should not be activated until CellarEye has 20+ club reference accounts, because Alfred Technologies already has named hotel case studies and CellarEye would enter as a second mover. <strong>The club-to-HNW private-cellar funnel is plausible but entirely unvalidated</strong> — no evidence in any track documents a SaaS vendor successfully using institutional hospitality deployments as a repeatable HNW acquisition channel. Pursue opportunistically through member locker features, not as a planned revenue stream.</div>
+
+        <div class="memo-section support">
+          <h4>Supporting evidence</h4>
+          <ul>
+            <li>Oracle OPERA Cloud publishes REST APIs through OHIP, and Lightspeed has a documented Oracle OPERA integration for hotel room-charge workflows — luxury hotel POS/PMS environments are materially more open than private-club ERPs. <span class="ref" data-ref="VQ-1">VQ-1</span> <span class="ref" data-ref="VQ-3">VQ-3</span></li>
+            <li>~145 AAA Five Diamond and ~1,750 AAA Four Diamond hotels in the U.S. establish a tangible market denominator. <span class="ref" data-ref="VQ-1">VQ-1</span></li>
+            <li>Named luxury hotel accounts demonstrably operate wine programs well above 2,500 bottles (The Little Nell at 20,000; Luce Intercontinental at 8,000). <span class="ref" data-ref="VQ-3">VQ-3</span></li>
+          </ul>
+        </div>
+
+        <div class="memo-section counter">
+          <h4>Counter evidence</h4>
+          <ul>
+            <li>Alfred Technologies already has published case studies at Château Frontenac and Post Hotel &amp; Spa — CellarEye would enter as a second mover against an established competitor. <span class="ref" data-ref="VQ-6">VQ-6</span></li>
+            <li>No documented precedent shows a SaaS vendor using institutional hospitality deployments as a repeatable HNW acquisition channel. <span class="ref" data-ref="VQ-5">VQ-5</span></li>
+            <li>No primary source quantifies the share of AAA Four/Five Diamond hotels maintaining 2,500+ bottle wine programs — hotel SAM penetration rate is unknown. <span class="ref" data-ref="VQ-3">VQ-3</span></li>
+            <li>Commercial wine-storage market estimates conflict materially across sources — wine-storage-facility expansion wedge is poorly bounded. <span class="ref" data-ref="VQ-3">VQ-3</span></li>
+          </ul>
+        </div>
+
+        <div class="memo-section flip">
+          <h4>What would change our mind</h4>
+          <p>If pilot sales outreach to 15 luxury hotels yields 5+ discovery calls from F&amp;B directors or GMs expressing active interest before CellarEye has reached 20 club accounts, the hotel expansion timeline should be accelerated to Year 2 and run in parallel with club acquisition rather than sequentially.</p>
+        </div>
+
+        <div class="memo-section kill">
+          <h4>Kill signals</h4>
+          <ul>
+            <li>Alfred Technologies announces a U.S. Series A or significant commercial expansion into private clubs.</li>
+            <li>Discovery calls with 10 luxury hotel F&amp;B directors reveal purchasing authority sits with a corporate technology committee rather than the property-level GM.</li>
+          </ul>
+        </div>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ══════════════════ PATHS ══════════════════ -->
+<section class="section" id="paths">
+  <div class="section-head">
+    <div>
+      <div class="section-kicker">Paths Considered</div>
+      <h2 class="section-title">Six strategic paths. One chosen, four dismissed, one unscouted — here's why.</h2>
+      <p class="section-desc">The Path Cartographer enumerated six genuinely distinct routes to market. Each was investigated by an independent research scout, then ranked by the War Table. The rationale below is what the scout evidence supported or failed to support.</p>
+    </div>
+  </div>
+
+  <div class="paths-wrap">
+    <table class="paths">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Path</th>
+          <th>Type</th>
+          <th>Key reason for</th>
+          <th>Key reason against</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="chosen">
+          <td class="rank">1</td>
+          <td class="pname">P5 — The Wine Valuation Bureau<small>Monetize the 500k-wine pricing database as a standalone software-only report.</small></td>
+          <td><span class="chip chip-line">Pivot</span></td>
+          <td class="for">Eliminates hardware, ERP, and sales-cycle barriers simultaneously; fastest time to revenue under a $1M budget.</td>
+          <td class="against">Entire business rests on third-party APIs with unknown enterprise terms; no underwriter confirmed WTP for automated data.</td>
+          <td><span class="status st-chosen">Chosen</span></td>
+        </tr>
+        <tr class="runner">
+          <td class="rank">2</td>
+          <td class="pname">P4 — The Luxury Hotel Beachhead<small>Skip club ERP lock-in; target AAA Four/Five Diamond hotels with open Oracle OPERA + Lightspeed APIs.</small></td>
+          <td><span class="chip chip-line">Phased entry</span></td>
+          <td class="for">Bypasses club ERP lock-in via documented open APIs; larger reward ceiling per account (The Little Nell: 20k bottles).</td>
+          <td class="against">No evidence on hotel F&amp;B tech purchasing authority; Alfred Technologies has head start with named case studies.</td>
+          <td><span class="status st-runner">Runner-up · Fallback</span></td>
+        </tr>
+        <tr class="dropped">
+          <td class="rank">3</td>
+          <td class="pname">P3 — The ERP Trojan Horse<small>Turn Jonas/Clubessential into a distribution channel rather than a gatekeeper.</small></td>
+          <td><span class="chip chip-line">Hedge</span></td>
+          <td class="for">Turns the biggest structural threat into the distribution channel; eliminates API lock-out risk.</td>
+          <td class="against">Cedes all pricing power; $1.24M ARR SOM may be too small to attract acquirer interest.</td>
+          <td><span class="status st-dropped">Dismissed</span></td>
+        </tr>
+        <tr class="dropped">
+          <td class="rank">4</td>
+          <td class="pname">P6 — The Samsung Play (Sovereign Cellar Infrastructure)<small>Reframe as regulatory-grade alcohol compliance infrastructure — Metrc precedent for cannabis.</small></td>
+          <td><span class="chip chip-line">Pivot</span></td>
+          <td class="for">Regulatory-grade compliance framing unlocks different budgets; Metrc cannabis precedent exists.</td>
+          <td class="against">Evidence concentrated in Texas only; no enforcement pain found; very high execution complexity for a $1M-budget venture.</td>
+          <td><span class="status st-dropped">Dismissed</span></td>
+        </tr>
+        <tr class="dropped">
+          <td class="rank">5</td>
+          <td class="pname">P2 — The Management Company Lever<small>Sell one deal to ClubCorp / Invited / Troon to land 50–100 clubs at once.</small></td>
+          <td><span class="chip chip-line">Full commit</span></td>
+          <td class="for">A single enterprise deal could deliver 50–100+ clubs overnight.</td>
+          <td class="against">No evidence any management company mandates standardized wine tech; all three targets in corporate restructuring.</td>
+          <td><span class="status st-dropped">Dismissed</span></td>
+        </tr>
+        <tr class="dropped">
+          <td class="rank">—</td>
+          <td class="pname">P1 — The Shrinkage Killer<small>Lead with the $62K/yr operational ROI case for the full-stack hardware product.</small></td>
+          <td><span class="chip chip-line">Wedge-first</span></td>
+          <td class="for">Strongest operational ROI case; core to CellarEye's existing capability.</td>
+          <td class="against">Requires Jonas/Clubessential API access <em>and</em> hardware deployment — the two barriers P5 was chosen to avoid.</td>
+          <td><span class="status st-notscouted">Not scouted</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Runner-up detail -->
+  <div style="margin-top: 32px;">
+    <div class="runner-card">
+      <div class="kicker">Runner-up · Activation trigger</div>
+      <h3>P4 — The Luxury Hotel Beachhead</h3>
+      <p class="pitch">Bypass private-club ERP lock-in entirely by targeting AAA Four/Five Diamond hotels whose POS/PMS systems (Oracle OPERA, Lightspeed) have documented open APIs — using hotel wins as proof points to re-enter the club market with leverage.</p>
+
+      <div class="runner-subgrid">
+        <div>
+          <h4>Scout evidence</h4>
+          <ul>
+            <li>Oracle OPERA Cloud publishes REST APIs through OHIP covering reservation, inventory, rate, CRM, and front-desk functions.</li>
+            <li>Lightspeed has a documented Oracle OPERA integration for hotel room-charge workflows and advertises an open API for custom integrations.</li>
+            <li>Third-party hospitality reviews position Lightspeed as "best for hotel restaurants" with multiple PMS integrations.</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Key risks</h4>
+          <ul>
+            <li>No hotel-by-hotel POS/PMS mapping for the top 50 U.S. luxury hotels — the "open stack" thesis is validated at the platform level but not at the account level.</li>
+            <li>No evidence on whether CellarEye's NFC/IoT hardware works in commercial hotel refrigeration environments (physically different from subterranean cellars).</li>
+            <li>No evidence on F&amp;B tech budgets or purchasing authority at AAA Five Diamond hotels.</li>
+            <li>Alfred Technologies has named case studies (Château Frontenac, Post Hotel &amp; Spa) — CellarEye would enter as a second mover against an incumbent.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="runner-trigger">
+        <strong>Activation trigger:</strong> If P5 encounters KS-1 (API pricing kills unit economics) or KS-2 (club CFOs do not convert to paid subscriptions), pivot resources to P4. Begin with 5 discovery calls to F&amp;B directors at top-50 U.S. luxury hotels to validate purchasing authority and technology stack.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ CONFIDENCE LEDGER ══════════════════ -->
+<section class="section" id="ledger">
+  <div class="section-head">
+    <div>
+      <div class="section-kicker">Confidence Ledger</div>
+      <h2 class="section-title">What we're most and least sure of — and what would flip each.</h2>
+      <p class="section-desc">The eight most load-bearing claims in this passport, each with a confidence level and the single piece of new evidence that would upgrade or downgrade it.</p>
+    </div>
+  </div>
+
+  <div class="ledger">
+    <table>
+      <thead>
+        <tr>
+          <th>Claim</th>
+          <th>Confidence</th>
+          <th>Top flip-condition</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Verdict: Pursue with conditions</strong> — valuation bureau is the best first path under $1M budget.</td><td><span class="cl-M">Medium</span></td><td>Club CFO discovery interviews: if &lt;3 of 10 express willingness to pay $3K+/yr, verdict downgrades to Pivot Recommended.</td></tr>
+        <tr><td><strong>No competitor offers automated cellar-level valuation reports</strong> as a standalone product.</td><td><span class="cl-H">High</span></td><td>Discovery of a direct competitor (auction house or fintech) offering automated, API-driven cellar valuation at scale would downgrade to Low.</td></tr>
+        <tr><td><strong>$62M SAM across 3,887 U.S. private clubs</strong> is analytically defensible.</td><td><span class="cl-H">High</span></td><td>If CMAA revises club count downward by &gt;20% or cellar penetration is &lt;40% of counted clubs, SAM shrinks below viable threshold.</td></tr>
+        <tr><td><strong>Insurance carriers require regular valuation updates</strong> (Chubb, PURE).</td><td><span class="cl-H">High</span></td><td>If carriers shift to blanket-only coverage models that eliminate per-item valuation, the demand driver disappears.</td></tr>
+        <tr><td><strong>Enterprise API pricing (Liv-ex, Wine-Searcher) supports &gt;60% gross margin</strong> on reports.</td><td><span class="cl-L">Low</span></td><td>Direct pricing confirmation from either provider; &lt;$0.05/lookup upgrades to High; &gt;$0.10 triggers KS-1.</td></tr>
+        <tr><td><strong>"Market analytics" labeling avoids appraiser licensing</strong> in CA and FL.</td><td><span class="cl-L">Low</span></td><td>Legal opinion from state beverage/property counsel; clear guidance either direction resolves the uncertainty.</td></tr>
+        <tr><td><strong>Valuation report customers will convert to hardware upsell</strong> (sequencing thesis).</td><td><span class="cl-L">Low</span></td><td>First 15 report customers' behavior within 12 months; if ≥3 express hardware interest, upgrades to Medium.</td></tr>
+        <tr><td><strong>Year 1 target of $345K ARR is achievable</strong>.</td><td><span class="cl-M">Medium</span></td><td>Dependent on EG-1 (API costs) and EG-2 (CFO WTP); if both resolve favorably, upgrades to High.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ══════════════════ KILL SIGNALS + CONSTRAINTS ══════════════════ -->
+<section class="section" id="guardrails">
+  <div class="section-head">
+    <div>
+      <div class="section-kicker">Guardrails</div>
+      <h2 class="section-title">Hard constraints the business must respect, and the kill signals that trigger a re-evaluation.</h2>
+    </div>
+  </div>
+
+  <div class="two-col">
+
+    <div>
+      <h3 style="font-size:13px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:var(--ink); margin-bottom:16px;">Critical Constraints</h3>
+      <div class="card-list">
+        <div class="card-item"><span class="cid">CC-1</span><div><strong>Third-party API dependency is existential.</strong> If per-lookup COGS exceed 40% of report price, the business is structurally unprofitable. Must resolve within 30 days.</div></div>
+        <div class="card-item"><span class="cid">CC-2</span><div><strong>Consignment revenue is legally dead.</strong> Federal TTB and state ABC laws prohibit unlicensed member-to-member wine sales. Do not position reports as facilitating peer-to-peer transactions.</div></div>
+        <div class="card-item"><span class="cid">CC-3</span><div><strong>Product must be labeled "market analytics," not "appraisal."</strong> Legal counsel must confirm within 45 days that this framing avoids state appraiser licensure requirements.</div></div>
+        <div class="card-item"><span class="cid">CC-4</span><div><strong>Insurance channel is unvalidated and conditional.</strong> Do not allocate sales resources to brokers/underwriters until structured interviews confirm a procurement path.</div></div>
+        <div class="card-item"><span class="cid">CC-5</span><div><strong>Hardware remains the terminal moat.</strong> Treat valuation as a bridge, not a destination. If &lt;3 of 15 report customers express hardware upgrade interest within 12 months, the sequencing thesis fails.</div></div>
+        <div class="card-item"><span class="cid">CC-6</span><div><strong>$1M operating budget ceiling.</strong> All product development, sales, and API costs must fit within the stated annual budget.</div></div>
+      </div>
+    </div>
+
+    <div>
+      <h3 style="font-size:13px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:var(--red); margin-bottom:16px;">Kill Signals</h3>
+      <div class="card-list">
+        <div class="card-item kill"><span class="cid">KS-1</span><div><strong>API access priced above $0.10/lookup at scale</strong>, making per-report COGS &gt;40% of report price. <em>Action:</em> Kill standalone valuation product; evaluate flat-fee license or revert to P4.</div></div>
+        <div class="card-item kill"><span class="cid">KS-2</span><div><strong>&lt;3 of 15 pilot clubs convert to paid subscriptions</strong> ($3,000+ ACV) within 6 months of receiving a free cellar health check. <em>Action:</em> Standalone demand thesis falsified; pivot to direct hardware via P4.</div></div>
+        <div class="card-item kill"><span class="cid">KS-3</span><div><strong>Legal counsel determines "market analytics" framing does not insulate from appraiser licensing</strong> AND no licensed appraiser partnership within 60 days. <em>Action:</em> Kill standalone product in affected states.</div></div>
+        <div class="card-item kill"><span class="cid">KS-4</span><div><strong>&lt;3 of 15 valuation-report customers express hardware upgrade interest</strong> within 12 months. <em>Action:</em> Sequencing thesis falsified; revert to P4 or P3 (ERP Trojan Horse).</div></div>
+        <div class="card-item kill"><span class="cid">KS-5</span><div><strong>Liv-ex 1000 index drops &gt;15% over 12 months.</strong> <em>Action:</em> "Unlock hidden equity" narrative collapses; reassess entire positioning; consider pivoting to shrinkage/operational framing only.</div></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════ FOOTER ══════════════════ -->
+<footer>
+  <div class="foot-brand">
+    <span class="mark-box" style="width:28px; height:28px;">
+      <svg width="16" height="16" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M11 3 L19 18 L3 18 Z" stroke="white" stroke-width="1.5" fill="none" stroke-linejoin="round"/>
+        <rect x="9" y="13" width="4" height="3" fill="white"/>
+      </svg>
+    </span>
+    <span>Innovera · Avalon × Cellary</span>
+  </div>
+  <div>
+    CellarEye Decision Dossier · 17 April 2026
+  </div>
+</footer>
+
+<script>
+  // ── Decision Memo accordion ──
+  document.querySelectorAll('.memo-head').forEach(head => {
+    head.addEventListener('click', () => {
+      const memo = head.closest('.memo');
+      memo.classList.toggle('open');
+    });
+  });
+
+  // ── VQ-N refs → scroll to FactBank entry + flash ──
+  document.querySelectorAll('.ref').forEach(chip => {
+    chip.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const target = document.getElementById(chip.dataset.ref);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        target.classList.add('flash');
+        setTimeout(() => target.classList.remove('flash'), 1600);
+      }
+    });
+  });
+
+  // ── FactBank confidence filter ──
+  const factBtns = document.querySelectorAll('.fact-btn');
+  factBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      factBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const filter = btn.dataset.filter;
+      document.querySelectorAll('.fact').forEach(f => {
+        if (filter === 'all' || f.dataset.confidence === filter) f.classList.remove('hidden');
+        else f.classList.add('hidden');
+      });
+    });
+  });
+</script>
+
+</body>
+</html>

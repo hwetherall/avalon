@@ -8,7 +8,9 @@
       "Read(//c/Users/hweth/OneDrive/Desktop/Innovera/Rapid/ Prototyping/avalon/src/pipeline/**)",
       "Bash(xxd)",
       "Bash(npx vite:*)",
-      "Read(//c/Users/hweth/OneDrive/Desktop/Innovera/Rapid/ Prototyping/avalon/**)"
+      "Read(//c/Users/hweth/OneDrive/Desktop/Innovera/Rapid/ Prototyping/avalon/**)",
+      "Bash(curl -sS -o /dev/null -w \"HTTP %{http_code}\\\\n\" http://localhost:5179/)",
+      "Bash(taskkill -F -FI \"WINDOWTITLE eq vite*\")"
     ]
   }
 }
